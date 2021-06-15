@@ -1,19 +1,8 @@
 # !/usr/bin/python3
-"""
-Program name: Mobius core
-Author: Tex Nevada
-Created: 14.06.21 - Europe
-"""
 
 # To run this code
 # Python 3.8 64bit or higher is required.
 # For required modules. Check Requirements.txt
-
-"""
-========================
-Modules is placed here!
-========================
-"""
 
 # import discord library
 import discord
@@ -50,6 +39,7 @@ token = APP["TOKEN"]
 Debug = APP["DEBUG"]
 prefix = APP["PREFIX"]
 boot_msg = APP["BOOT_MSG"]
+ready_msg = APP["READY_MSG"]
 
 log_location = config["LOGGING"]["LOG"]
 log_name = log_location+"Mobius.log"
@@ -59,6 +49,10 @@ log_name = log_location+"Mobius.log"
 Logging
 =========
 """
+
+if Environment == "dev":
+    print("~~You are running a development version!~~\n"
+          "~~It should not be used for production!~~")
 
 logs = False
 try:
@@ -117,7 +111,7 @@ client = commands.AutoShardedBot(
     )
 
 # Here we are deleting the standard help function in discord to make our on in a embed later.
-client.remove_command("help")
+# client.remove_command("help")
 
 """
 =================
@@ -130,8 +124,9 @@ Functions checks
 def is_owner():
     # if the message from the user = his user ID then the user is owner
     async def predicate(ctx):
+        config.read("./config.ini")
         Authlist = []
-        for key, value in config["ADMIN"]:
+        for key, value in config.items("ADMIN"):
             Authlist.append(int(value))
         if ctx.author.id in Authlist:
             return True
@@ -155,7 +150,7 @@ async def on_ready():
           f"\nDiscord.py version: {discord.__version__}"
           f"\n------"
           f"\nBot is serving: {str(len(client.guilds))} guilds.")
-    await client.change_presence(status=discord.Status.online, activity=discord.Game(name="@MODUS help"))
+    await client.change_presence(status=discord.Status.online, activity=discord.Game(name=ready_msg))
     if os.path.exists("disablelogs.txt") is True:
         print("[WARNING]: Logging is disabled! To enable logging. Delete disablelogs.txt!")
 
@@ -180,17 +175,17 @@ extension files loads here!
 """
 # TODO: Rebuilt cog loader
 # Here is all the extensions in the discord client. If a new extension is added. Add it here.
-cogs_list = ["cogs", "admin"]
-
-if __name__ == "__main__":
-    for load_dir in cogs_list:
-        for extension in [f.replace('.py', '') for f in listdir(load_dir) if isfile(join(load_dir, f))]:
-            try:
-                client.load_extension(load_dir + "." + extension)
-                print('loaded extension {}'.format(extension))
-            except Exception as e:
-                exc = '{}: {}'.format(type(e).__name__, e)
-                print('Failed to load extension {}\n{}'.format(extension, exc))
+# cogs_list = ["cogs", "admin"]
+#
+# if __name__ == "__main__":
+#     for load_dir in cogs_list:
+#         for extension in [f.replace('.py', '') for f in listdir(load_dir) if isfile(join(load_dir, f))]:
+#             try:
+#                 client.load_extension(load_dir + "." + extension)
+#                 print('loaded extension {}'.format(extension))
+#             except Exception as e:
+#                 exc = '{}: {}'.format(type(e).__name__, e)
+#                 print('Failed to load extension {}\n{}'.format(extension, exc))
 
 
 """
