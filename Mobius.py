@@ -113,11 +113,9 @@ def is_owner():
     # if the message from the user = his user ID then the user is owner
     async def predicate(ctx):
         config.read("./config.ini")
-        Authlist = []
         for key, value in config.items("ADMIN"):
-            Authlist.append(int(value))
-        if ctx.author.id in Authlist:
-            return True
+            if ctx.author.id in int(value):
+                return True
     return commands.check(predicate)
 
 """
