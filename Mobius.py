@@ -50,13 +50,12 @@ Logging
 =========
 """
 
-if Environment == "dev":
+if Environment == "Dev":
     print("~~You are running a development version!~~\n"
           "~~It should not be used for production!~~")
 
-logs = False
 try:
-    if os.path.exists("disablelogs.txt") is False:
+    if config["LOGGING"]["LOGS"] == "True":
         files = glob.glob(log_name)
         now = datetime.now()
         time = now.strftime("%H.%M.%S")
@@ -91,8 +90,8 @@ Prep files
 
 
 def get_prefix(client, message):
-    if not message.guild:
-        return commands.when_mentioned_or(*prefix)(client, message)
+    # if not message.guild:
+    #     return commands.when_mentioned_or(*prefix)(client, message)
     return commands.when_mentioned_or(*prefix)(client, message)
 
 
@@ -151,8 +150,8 @@ async def on_ready():
           f"\n------"
           f"\nBot is serving: {str(len(client.guilds))} guilds.")
     await client.change_presence(status=discord.Status.online, activity=discord.Game(name=ready_msg))
-    if os.path.exists("disablelogs.txt") is True:
-        print("[WARNING]: Logging is disabled! To enable logging. Delete disablelogs.txt!")
+    if config["LOGGING"]["LOGS"] == "False":
+        print("[WARN]: Logging is disabled! If this was a mistake. Please enable it in the config under LOGGING.")
 
 
 # starts a client.event
