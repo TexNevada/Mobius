@@ -4,24 +4,14 @@
 # Python 3.8 64bit or higher is required.
 # For required modules. Check Requirements.txt
 
-# import discord library
 import discord
-# Imports commands
 from discord.ext import commands
-# This is required to fetch the nuke codes or other files from urls
-# Allows us to read json files
-import json
-
-from os import listdir
-from os.path import isfile, join
 import logging
 import os
 import glob
 from datetime import date, datetime
 import random
 import configparser
-
-print(f"Discord.py version: {discord.__version__}")
 
 """
 =========
