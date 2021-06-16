@@ -173,6 +173,8 @@ extension files loads here!
 #                 exc = '{}: {}'.format(type(e).__name__, e)
 #                 print('Failed to load extension {}\n{}'.format(extension, exc))
 
+client.load_extension("data.cogs._CogLoader")
+
 
 """
 ============================
