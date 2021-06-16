@@ -24,14 +24,14 @@ config.read("./config.ini")
 
 APP = config["APP"]
 
-Environment = APP["ENVIRONMENT"]
-token = APP["TOKEN"]
-Debug = APP["DEBUG"]
-prefix = APP["PREFIX"]
-boot_msg = APP["BOOT_MSG"]
-ready_msg = APP["READY_MSG"]
+Environment = APP["Environment"]
+token = APP["Token"]
+Debug = APP["Debug"]
+prefix = APP["Prefix"]
+boot_msg = APP["Boot_msg"]
+ready_msg = APP["Ready_msg"]
 
-log_location = config["LOGGING"]["LOG"]
+log_location = config["LOGGING"]["Log"]
 log_name = log_location+"Mobius.log"
 
 """
@@ -44,26 +44,24 @@ if Environment == "Dev":
     print("~~You are running a development version!~~\n"
           "~~It should not be used for production!~~")
 
-try:
-    if config["LOGGING"]["LOGS"] == "True":
-        files = glob.glob(log_name)
-        now = datetime.now()
-        time = now.strftime("%H.%M.%S")
-        for file in files:
-            split = file.split(".")
-            new_name = "{} {} {}.log".format(split[0], date.today(), time)
-            try:
-                os.rename(file, new_name)
-            except:
-                new_name = "{} {} {} Random {}.log".format(split[0], date.today(), time, random.randint(1, 10000))
-                os.replace(file, new_name)
-except:
-    pass
+
+if config["LOGGING"]["Logs"] == "True":
+    files = glob.glob(log_name)
+    now = datetime.now()
+    time = now.strftime("%H.%M.%S")
+    for file in files:
+        split = file.split(".")
+        new_name = "{} {} {}.log".format(split[0], date.today(), time)
+        try:
+            os.rename(file, new_name)
+        except:
+            new_name = "{} {} {} Random {}.log".format(split[0], date.today(), time, random.randint(1, 10000))
+            os.replace(file, new_name)
 
 if Debug == "DEBUG":
     LogLevel = logging.DEBUG
 else:
-    LogLevel = logging.DEBUG
+    LogLevel = logging.WARNING
 
 logger = logging.getLogger('discord')
 logger.setLevel(LogLevel)
@@ -86,12 +84,13 @@ def get_prefix(client, message):
 
 
 intents = discord.Intents.default()
-intents.members = True
+intents.members = eval(APP["Members"])
+intents.presences = eval(APP["Presences"])
 client = commands.AutoShardedBot(
     command_prefix=get_prefix,
     status=discord.Status.dnd,
     activity=discord.Game(name=boot_msg),
-    case_insensitive=True,
+    case_insensitive=eval(APP["Case_insensitive"]),
     # The total number of shards to use between all clusters
     # shard_count=4,
     # Indicate what shard ID to use
@@ -140,7 +139,7 @@ async def on_ready():
           f"\n------"
           f"\nBot is serving: {str(len(client.guilds))} guilds.")
     await client.change_presence(status=discord.Status.online, activity=discord.Game(name=ready_msg))
-    if config["LOGGING"]["LOGS"] == "False":
+    if config["LOGGING"]["Logs"] == "False":
         print("[WARN]: Logging is disabled! If this was a mistake. Please enable it in the config under LOGGING.")
 
 
