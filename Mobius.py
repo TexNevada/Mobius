@@ -11,6 +11,7 @@ import os
 import glob
 from datetime import date, datetime
 import random
+import data.functions.owner as owner
 import configparser
 
 """
@@ -102,23 +103,6 @@ client = commands.AutoShardedBot(
 # client.remove_command("help")
 
 """
-=================
-Functions checks
-=================
-"""
-
-
-# defines the fuction is the user the owner.
-def is_owner():
-    # if the message from the user = his user ID then the user is owner
-    async def predicate(ctx):
-        config.read("./config.ini")
-        for key, value in config.items("ADMIN"):
-            if ctx.author.id in int(value):
-                return True
-    return commands.check(predicate)
-
-"""
 ============================
 Login procedure for the bot
 ============================
@@ -154,25 +138,7 @@ async def on_guild_join(guild):
     # await client.change_presence(status=discord.Status.online, activity=discord.Game(name=">help or @MODUS help"))
     print(f"Bot is serving: {str(len(client.guilds))} guilds.")
 
-"""
-===========================
-extension files loads here!
-===========================
-"""
-# TODO: Rebuilt cog loader
-# Here is all the extensions in the discord client. If a new extension is added. Add it here.
-# cogs_list = ["cogs", "admin"]
-#
-# if __name__ == "__main__":
-#     for load_dir in cogs_list:
-#         for extension in [f.replace('.py', '') for f in listdir(load_dir) if isfile(join(load_dir, f))]:
-#             try:
-#                 client.load_extension(load_dir + "." + extension)
-#                 print('loaded extension {}'.format(extension))
-#             except Exception as e:
-#                 exc = '{}: {}'.format(type(e).__name__, e)
-#                 print('Failed to load extension {}\n{}'.format(extension, exc))
-
+# Loads the Cogs Loader
 client.load_extension("data.cogs._CogLoader")
 
 
@@ -186,7 +152,7 @@ Logs the bot out of discord
 # logs out the bot from discord
 @client.command(name="logout", aliases=["shutdown"])
 # User must have the role to continue
-@is_owner()
+@owner.is_owner()
 # defines a new function call logout
 async def logout(ctx):
     print("\nBot logout requested. Shutting down...\n")
