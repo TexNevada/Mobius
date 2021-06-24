@@ -20,8 +20,9 @@ class _CogLoader(commands.Cog):
                 self.client.load_extension("data.cogs." + cog[0])
                 passed.append(cog[0])
                 passed_chk = True
-            except:
+            except Exception as e:
                 errors.append(cog[0])
+                # TODO: Add check for error
         if bool(errors):
             for cog in errors:
                 print(f"ERROR! Could not load the following `{cog}`")
