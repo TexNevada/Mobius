@@ -12,6 +12,7 @@ import glob
 from datetime import date, datetime
 import random
 import data.functions.owner as owner
+import data.functions.ConfigSetup as ConfigSetup
 import configparser
 
 """
@@ -19,7 +20,11 @@ import configparser
 Config
 =========
 """
+# Checks to see if the config file exists.
+# Will pass if config does exist.
+ConfigSetup.check()
 
+# Reads the config and configures parameters.
 config = configparser.ConfigParser()
 config.read("./config.ini")
 
