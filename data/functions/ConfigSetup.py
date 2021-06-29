@@ -1,6 +1,8 @@
 import requests
 from os import path
-import sys, subprocess
+import sys
+import subprocess
+
 
 def download():
     print("[INFO]: Downloading requirements")
