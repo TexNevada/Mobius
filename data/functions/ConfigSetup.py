@@ -1,12 +1,9 @@
 import requests
 from os import path
 import sys
-import subprocess
 
 
 def download():
-    print("[INFO]: Downloading requirements")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
     print("[INFO]: Downloading missing config file.")
 
     url = "https://cdn.edb.tools/Mobius/default_config.ini"

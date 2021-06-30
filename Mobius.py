@@ -2,8 +2,11 @@
 
 # To run this code
 # Python 3.8 64bit or higher is required.
-# For required modules. Check Requirements.txt
+# Checks if all requirements are installed. If not it will install them.
+import data.functions.ReqInstaller as ReqInstaller
+ReqInstaller.check()
 
+# Imports the rest of the modules
 import discord
 from discord.ext import commands
 import logging
