@@ -1,6 +1,10 @@
 import discord
+import discord.ext.commands
 from discord.ext import commands
 import datetime
+import configparser
+config = configparser.ConfigParser()
+config.read("./config.ini")
 
 
 class User_General_Cmds(commands.Cog):
@@ -27,8 +31,9 @@ class User_General_Cmds(commands.Cog):
             print(f"A user requested the credits command in \"{ctx.guild.name}\" ")
         else:
             print("A user requested the credits command in a private message")
-        await ctx.send("You can find the credits to the bot right here: "
-                       "https://modus.enclavedb.net/books/changelog-credits-other/page/credits-significant-contributors")
+        conf = configparser.ConfigParser()
+        conf.read("./config.ini")
+        await ctx.send(f"You can find the credits to the bot right here: {conf['APP']['Credits']}")
 
     @commands.command()
     async def support(self, ctx):
@@ -36,7 +41,9 @@ class User_General_Cmds(commands.Cog):
             print(f"A user requested the support command in \"{ctx.guild.name}\"")
         else:
             print("A user requested the support command in a private message")
-        await ctx.send("https://discord.gg/hMfgSaN")
+        conf = configparser.ConfigParser()
+        conf.read("./config.ini")
+        await ctx.send(conf["APP"]["Discord"])
 
     @commands.command()
     async def guilds(self, ctx):
@@ -44,7 +51,7 @@ class User_General_Cmds(commands.Cog):
             print(f"A user requested the guilds command in \"{ctx.guild.name}\"")
         else:
             print(f"A user requested the guilds command in a private message")
-        await ctx.send(f"MODUS is in {str(len(self.client.guilds))} servers so far!")
+        await ctx.send(f"{config['APP']['Bot_Name']} is in {str(len(self.client.guilds))} servers so far!")
 
     @commands.command()
     async def invite(self, ctx):
@@ -52,7 +59,9 @@ class User_General_Cmds(commands.Cog):
             print(f"A user requested the invite command in \"{ctx.guild.name}\"")
         else:
             print(f"A user requested the invite command in a private message")
-        await ctx.send("https://discord.com/oauth2/authorize?client_id=532591107553624084&permissions=1879960790&scope=bot")
+        conf = configparser.ConfigParser()
+        conf.read("./config.ini")
+        await ctx.send(conf["APP"]["Invite"])
 
     @commands.command()
     async def ping(self, ctx):
@@ -64,6 +73,19 @@ class User_General_Cmds(commands.Cog):
         ping_ = self.client.latency
         ping = round(ping_ * 1000)
         await ctx.send(f"Ping result: `{str(ping)} ms`")
+
+    @commands.command()
+    @commands.guild_only()
+    async def enlarge(self, ctx, *, member: discord.Member = None):
+        print(f"A user requested to enlarge a user profile image in \"{ctx.guild.name}\" ")
+        try:
+            if not member:
+                member = ctx.author
+            embed = discord.Embed(colour=member.colour, title=str(member))
+            embed.set_image(url=member.avatar_url)
+            await ctx.send(embed=embed)
+        except Exception:
+            await ctx.send(f"Could not find anyone by the name {member}")
 
 
 def setup(client):

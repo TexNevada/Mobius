@@ -39,9 +39,10 @@ Debug = APP["Debug"]
 prefix = APP["Prefix"]
 boot_msg = APP["Boot_msg"]
 ready_msg = APP["Ready_msg"]
+bot_name = APP["Bot_Name"]
 
 log_location = config["LOGGING"]["Log"]
-log_name = log_location+"Mobius.log"
+log_name = log_location+bot_name+".log"
 
 """
 =========

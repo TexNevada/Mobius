@@ -5,6 +5,9 @@ from discord.ext import commands
 import requests
 from pprint import pprint
 import re
+import configparser
+config = configparser.ConfigParser()
+config.read("./config.ini")
 
 
 class User_F76_Seasons(commands.Cog):
@@ -34,6 +37,8 @@ class User_F76_Seasons(commands.Cog):
             embed2 = discord.Embed(color=0x47758e)
             embed3 = discord.Embed(color=0x47758e)
             embed4 = discord.Embed(color=0x47758e)
+            embed4.set_footer(text=f'You can also view the image of each rank. Here is a example: '
+                                   f'\"@{config["APP"]["Bot_Name"]} season rank 5\"')
             nr = 0
             while rank:
                 try:
