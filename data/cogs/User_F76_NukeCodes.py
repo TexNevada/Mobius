@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 # Allows the code to retrieve data online
 from datetime import datetime
+import configparser
 
 LastKnownCodes = []
 
@@ -70,6 +71,7 @@ class User_F76_NukeCodes(commands.Cog):
 
     @commands.command(name="codes", aliases=["nukecodes", "nukecode", "nc", "code", "cc"])
     async def codes(self, ctx):
+
         if ctx.guild:
             print(f"A user requested \"nuke codes\" in \"{ctx.guild.name}\" ")
         else:
@@ -98,7 +100,9 @@ class User_F76_NukeCodes(commands.Cog):
 
             embed.set_footer(text="Special thanks to https://nukacrypt.com/ for providing codes for all these years!")
             # embed.set_image(url="")
-            embed.set_thumbnail(url="https://cdn.edb.tools/MODUS_Project/Services/76/Logos/NukeCodesLogo.png")
+            config = configparser.ConfigParser()
+            config.read("./config.ini")
+            embed.set_thumbnail(url=config["EDB.TOOLS"]["NukeCodes"])
 
             embed.add_field(name="This week's nuclear codes",
                             value=code_response)
