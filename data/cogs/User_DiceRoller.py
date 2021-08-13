@@ -14,7 +14,7 @@ class DiceRoller(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command()
+    @commands.command(aliases=["gmroll"])
     async def roll(self, ctx, arg1: str, *, arg2=None):
         if ctx.guild:
             print(f"A user requested the roll command in {ctx.guild.name}")
@@ -62,7 +62,11 @@ class DiceRoller(commands.Cog):
                                 else:
                                     FinalAnswer = f"{rolled} {random_result}\n" \
                                                   f"{total} {total_number}"
-                                await ctx.send(FinalAnswer)
+                                if ctx.invoked_with.lower() == "gmroll":
+                                    await ctx.send("The Game Master has rolled their dice!")
+                                    await ctx.author.send(FinalAnswer)
+                                else:
+                                    await ctx.send(FinalAnswer)
                             else:
                                 await ctx.send("You can't roll dice with sides that's below 2")
                         else:
