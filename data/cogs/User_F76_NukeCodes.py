@@ -7,7 +7,7 @@ from datetime import datetime
 import configparser
 
 LastKnownCodes = []
-
+# TODO: Add specific time and not just date
 codes = {
     "1/7": ["18377506", "44985103", "24232724"],
     "1/14": ["68562307", "40602131", "31631987"],
@@ -102,7 +102,7 @@ class User_F76_NukeCodes(commands.Cog):
             # embed.set_image(url="")
             config = configparser.ConfigParser()
             config.read("./config.ini")
-            embed.set_thumbnail(url=config["EDB.TOOLS"]["NukeCodes"])
+            embed.set_thumbnail(url=config["EDB.TOOLS"]["F76_NukeCodes"])
 
             embed.add_field(name="This week's nuclear codes",
                             value=code_response)
