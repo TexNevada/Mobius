@@ -72,6 +72,7 @@ class User_F76_Mutations(commands.Cog):
                     print(e)
             else:
                 await ctx.send("Could not find anything by that name. Did you type it correctly?")
+        c.close()
 
     @commands.command()
     async def mutations(self, ctx):
@@ -95,7 +96,10 @@ class User_F76_Mutations(commands.Cog):
                                     inline=False)
                 await ctx.send(embed=embed)
             except Exception as e:
-                await ctx.send(e)
+                await ctx.send("Looks like there might be some connection issues with the database. "
+                               "Please try again later")
+                print(e)
+        c.close()
 
 
 # ends the extension
