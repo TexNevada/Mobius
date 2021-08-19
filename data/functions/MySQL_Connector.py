@@ -8,7 +8,6 @@ class MyDB:
         config.read("./config.ini")
         db = config["Credentials"]
         databases = [key for key in config["Databases"]]
-        print(databases)
         if database in databases:
             if db["Active"] == "True":
                 self._db_connection = mysql.connector.connect(host=db['IP'],
