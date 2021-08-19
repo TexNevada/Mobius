@@ -4,17 +4,8 @@ import discord
 from discord.ext import commands
 # Import permissions & error checks
 from discord.ext.commands.cooldowns import BucketType
-import data.functions.owner as owner
-
-
-# defines the fuction is the user the owner.
-def is_owner():
-    # if the message from the user = his user ID then the user is owner
-    async def predicate(ctx):
-        Authlist = [189490137762103298, 214200757992292353]
-        if ctx.author.id in Authlist:
-            return True
-    return commands.check(predicate)
+from data.functions.owner import is_owner
+import configparser
 
 
 class Bot_Support(commands.Cog):
