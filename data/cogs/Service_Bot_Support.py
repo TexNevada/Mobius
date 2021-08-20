@@ -8,7 +8,7 @@ from data.functions.owner import is_owner
 import configparser
 
 
-class Bot_Support(commands.Cog):
+class Service_Bot_Support(commands.Cog):
     def __init__(self, client):
         self.client = client
 
@@ -76,4 +76,4 @@ class Bot_Support(commands.Cog):
 
 # ends the extension
 def setup(client):
-    client.add_cog(Bot_Support(client))
+    client.add_cog(Service_Bot_Support(client))
