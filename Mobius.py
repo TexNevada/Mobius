@@ -2,8 +2,11 @@
 
 # To run this code
 # Python 3.8 64bit or higher is required.
-# For required modules. Check Requirements.txt
+# Checks if all requirements are installed. If not it will install them.
+import data.functions.ReqInstaller as ReqInstaller
+ReqInstaller.check()
 
+# Imports the rest of the modules
 import discord
 from discord.ext import commands
 import logging
@@ -11,7 +14,7 @@ import os
 import glob
 from datetime import date, datetime
 import random
-import data.functions.owner as owner
+from data.functions.owner import is_owner
 import data.functions.ConfigSetup as ConfigSetup
 import configparser
 
@@ -36,9 +39,10 @@ Debug = APP["Debug"]
 prefix = APP["Prefix"]
 boot_msg = APP["Boot_msg"]
 ready_msg = APP["Ready_msg"]
+bot_name = APP["Bot_Name"]
 
 log_location = config["LOGGING"]["Log"]
-log_name = log_location+"Mobius.log"
+log_name = log_location+bot_name+".log"
 
 """
 =========
@@ -105,7 +109,7 @@ client = commands.AutoShardedBot(
     )
 
 # Here we are deleting the standard help function in discord to make our on in a embed later.
-# client.remove_command("help")
+client.remove_command("help")
 
 """
 ============================
@@ -157,7 +161,7 @@ Logs the bot out of discord
 # logs out the bot from discord
 @client.command(name="logout", aliases=["shutdown"])
 # User must have the role to continue
-@owner.is_owner()
+@is_owner()
 # defines a new function call logout
 async def logout(ctx):
     print("\nBot logout requested. Shutting down...\n")

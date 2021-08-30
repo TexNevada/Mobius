@@ -1,6 +1,7 @@
 from discord.ext import commands
 import os
 import data.functions.owner as owner
+import configparser
 
 
 class _CogLoader(commands.Cog):
@@ -22,7 +23,10 @@ class _CogLoader(commands.Cog):
                 passed_chk = True
             except Exception as e:
                 errors.append(cog[0])
-                # TODO: Add check for error
+                config = configparser.ConfigParser()
+                config.read("./config.ini")
+                if config["APP"]["Debug"] == "DEBUG":
+                    print(e)
         if bool(errors):
             for cog in errors:
                 print(f"ERROR! Could not load the following `{cog}`")
