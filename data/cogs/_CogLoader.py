@@ -1,38 +1,43 @@
-from discord.ext import commands
+from discord.ext import commands, tasks
+import discord
 import os
 import data.functions.owner as owner
 import configparser
 
 
 class _CogLoader(commands.Cog):
-    def __init__(self, client):
+    def __init__(self, client: commands.Bot) -> None:
         self.client = client
+        # self.load_all.start()
 
-        # Loads the cog at the beginning
-        cogs = os.listdir("./data/cogs/")
-        for item in ["_CogLoader.py", "__init__.py", "__pycache__"]:
-            cogs.remove(item)
-        errors = []
-        passed = []
-        passed_chk = False
-        for cog in cogs:
-            cog = cog.split(".")
-            try:
-                self.client.load_extension("data.cogs." + cog[0])
-                passed.append(cog[0])
-                passed_chk = True
-            except Exception as e:
-                errors.append(cog[0])
-                config = configparser.ConfigParser()
-                config.read("./config.ini")
-                if config["APP"]["Debug"] == "DEBUG":
-                    print(e)
-        if bool(errors):
-            for cog in errors:
-                print(f"ERROR! Could not load the following `{cog}`")
-        if passed_chk is True:
-            for cog in passed:
-                print(f"OK! Loaded {cog}")
+    # @tasks.loop(count=1)
+    # async def load_all(self):
+    #     # Loads the cog at the beginning
+    #     cogs = os.listdir("./data/cogs/")
+    #     for item in ["_CogLoader.py", "__init__.py", "__pycache__", "Unfinished cogs"]:
+    #         cogs.remove(item)
+    #     errors = []
+    #     passed = []
+    #     passed_chk = False
+    #     for cog in cogs:
+    #         cog = cog.split(".")
+    #         try:
+    #             await self.client.load_extension("data.cogs." + cog[0])
+    #             passed.append(cog[0])
+    #             passed_chk = True
+    #         except Exception as e:
+    #             errors.append(cog[0])
+    #             config = configparser.ConfigParser()
+    #             config.read("./config.ini")
+    #             if config["APP"]["Debug"] == "DEBUG":
+    #                 print(e)
+    #     if bool(errors):
+    #         for cog in errors:
+    #             print(f"ERROR! Could not load the following `{cog}`")
+    #     if passed_chk is True:
+    #         for cog in passed:
+    #             print(f"OK! Loaded {cog}")
+    #     # await self.client.tree.sync(guild=discord.Object(id=704725246187536489))
 
     @commands.group(case_insensitive=True)
     @owner.is_owner()
@@ -53,10 +58,10 @@ class _CogLoader(commands.Cog):
             cog = cog.split(".")
             try:
                 try:
-                    self.client.unload_extension("data.cogs."+cog[0])
+                    await self.client.unload_extension("data.cogs."+cog[0])
                 except Exception as e:
                     error.append(e)
-                self.client.load_extension("data.cogs."+cog[0])
+                await self.client.load_extension("data.cogs."+cog[0])
                 passed.append(cog[0])
                 passed_chk = True
             except Exception as e:
@@ -76,10 +81,10 @@ class _CogLoader(commands.Cog):
             passed = False
             try:
                 try:
-                    self.client.unload_extension("data.cogs." + arg)
+                    await self.client.unload_extension("data.cogs." + arg)
                 except Exception as e:
                     error.append(e)
-                self.client.load_extension("data.cogs." + arg)
+                await self.client.load_extension("data.cogs." + arg)
                 passed = True
             except Exception as e:
                 error.append(e)
@@ -97,7 +102,7 @@ class _CogLoader(commands.Cog):
             error = []
             passed = False
             try:
-                self.client.load_extension("data.cogs." + arg)
+                await self.client.load_extension("data.cogs." + arg)
                 passed = True
             except Exception as e:
                 error.append(e)
@@ -115,7 +120,7 @@ class _CogLoader(commands.Cog):
             error = []
             passed = False
             try:
-                self.client.unload_extension("data.cogs." + arg)
+                await self.client.unload_extension("data.cogs." + arg)
                 passed = True
             except Exception as e:
                 error.append(e)
@@ -125,5 +130,5 @@ class _CogLoader(commands.Cog):
                 await ctx.send(f"OK! Unloaded: {arg}")
 
 
-def setup(client):
-    client.add_cog(_CogLoader(client))
+async def setup(client):
+    await client.add_cog(_CogLoader(client))
