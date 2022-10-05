@@ -141,7 +141,7 @@ class MyClient(commands.AutoShardedBot):
         #
         # Syncing
         #   VVV
-        # self.tree.copy_global_to(guild=dev_guild)
+        self.tree.copy_global_to(guild=dev_guild)
         # await self.tree.sync()
 
 
@@ -180,6 +180,42 @@ Slash commands procedure
 @client.tree.command()
 async def ping(interaction: discord.Interaction):
     await interaction.response.send_message("pong")
+
+
+@client.command()
+@is_owner()
+async def sync(ctx: commands.Context, guilds: commands.Greedy[discord.Object], spec=None) -> None:
+    if not guilds:
+        # sync current guild
+        if spec == "local":
+            synced = await client.tree.sync(guild=ctx.guild)
+        # copies all global app commands to current guild and syncs
+        elif spec == "global-to-local":
+            client.tree.copy_global_to(guild=ctx.guild)
+            synced = await client.tree.sync(guild=ctx.guild)
+        # clears all commands from the current guild target and syncs (removes guild commands)
+        elif spec == "clear-sync":
+            client.tree.clear_commands(guild=ctx.guild)
+            await client.tree.sync(guild=ctx.guild)
+            synced = []
+        else:
+            synced = await client.tree.sync()
+
+        await ctx.send(
+            f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}"
+        )
+        return
+
+    ret = 0
+    for guild in guilds:
+        try:
+            await client.tree.sync(guild=guild)
+        except discord.HTTPException:
+            pass
+        else:
+            ret += 1
+
+    await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.")
 
 """
 ============================
