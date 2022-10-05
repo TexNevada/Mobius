@@ -1,13 +1,5 @@
-"""
-Extension name: admin commands
-Author: Tex Nevada
-Created: 18.03.19 - Europe
-"""
-# import discord py library
 import discord
-# Imports commands
 from discord.ext import commands
-# import permissions
 from discord.ext.commands import has_permissions
 import asyncio
 from data.functions.MySQL_Connector import MyDB
@@ -20,8 +12,9 @@ config.read("./config.ini")
 
 
 class Admin_Commands(commands.Cog):
-    def __init__(self, client):
+    def __init__(self, client: commands.Bot) -> None:
         self.client = client
+        super().__init__()
 
     # Reads the users input if it has prefix or not
     @commands.command(name="clear", aliases=["purge"])
@@ -48,21 +41,21 @@ class Admin_Commands(commands.Cog):
             print(e)
             await ctx.send('I require the permission `manage messages` to delete messages for you.')
 
-    @commands.command(name="moveto", aliases=["mimic", "echo", "silentmoveto", "перемести", "перемесТихо"])
+    @commands.command(name="moveto", aliases=["mimic", "echo", "silentmoveto"])
     # Will only execute command if user has the role
     @commands.guild_only()
     @has_permissions(manage_messages=True)
     # sees user wants to use the command clear.
-    async def moveto(self, ctx, toChannel: discord.TextChannel, amount: int, *, reason=None):
+    async def moveto(self, ctx, To_Channel: discord.TextChannel, amount: int, *, reason=None):
         missing_perms = "I require the permission `manage webhooks` & " \
                         "`manage messages` to be able to move messages for you"
 
         # In case of trying to move to the same channel
-        if toChannel == ctx.channel:
-            await ctx.send("It seems you're trying to move the messages to the original channel")
+        if To_Channel == ctx.channel:
+            await ctx.response.send_message("It seems you're trying to move the messages to the original channel")
             return False
-        elif not toChannel.permissions_for(ctx.author.guild.me).manage_webhooks:
-            await ctx.send(f'I Require the permission "Manage Webhooks" on the {toChannel} '
+        elif not To_Channel.permissions_for(ctx.user.guild.me).manage_webhooks:
+            await ctx.send(f'I Require the permission "Manage Webhooks" on the {To_Channel} '
                            f'channel itself to be able to move messages for you.')
             return False
 
@@ -73,7 +66,7 @@ class Admin_Commands(commands.Cog):
                         users = []
                         messages = []
                         image_formats = ["jpg", "png", "gif", "jpeg"]
-                        webhook = await toChannel.create_webhook(name="Temporary Moveto Webhook")
+                        webhook = await To_Channel.create_webhook(name="Temporary Moveto Webhook")
                         async for message in ctx.channel.history(limit=amount+1):
                             # Look for messages or attachments
                             if message.id != ctx.message.id and (message.content != '' or message.attachments[0].url):
@@ -135,52 +128,6 @@ class Admin_Commands(commands.Cog):
         else:
             await ctx.send(missing_perms)
 
-    @commands.command()
-    @commands.guild_only()
-    @has_permissions(administrator=True)
-    async def prefix(self, ctx, arg=None):
-        print(f"A admin changed the prefix of their server in {ctx.guild.name}")
-        try:
-            c = MyDB("essential")
-            c.execute("SELECT * FROM GuildTable WHERE GuildID = %s", (ctx.guild.id,))
-            response = c.fetchone()
-            oldprefix = []
-            isprefixold = False
-            if response["Prefix"] and arg is not None:
-                oldprefix.append(response["Prefix"])
-                isprefixold = True
 
-            if arg is None:
-                c.execute("UPDATE GuildTable SET Prefix = %s WHERE GuildID = %s", (config["APP"]["Prefix"], ctx.guild.id,))
-            else:
-                c.execute("UPDATE GuildTable SET Prefix = %s WHERE GuildID = %s", (arg, ctx.guild.id,))
-            c.commit()
-            c.close()
-
-            embed = discord.Embed(color=0xe7e9d3, title="The Enclave Database")
-            embed.set_thumbnail(url="https://cdn.edb.tools/MODUS_Project/images/Enclave/Enclave.png")
-            prefix = "Your server prefix has changed!"
-            if arg is None:
-                embed.add_field(name=prefix,
-                                value="MODUS prefix has now been reverted back to default\n**Default:** >")
-
-            elif isprefixold is True:
-                embed.add_field(name=prefix,
-                                value=f"Your prefix is now changed\n"
-                                      f"**Old:** {oldprefix[0]}\n"
-                                      f"**New:** {arg}\n"
-                                      f"You can also use @MODUS for commands even if you forget your prefix")
-
-            elif isprefixold is False:
-                embed.add_field(name=prefix, value=f"Your prefix is now changed\n"
-                                                   f"**New:** {arg}")
-
-            await ctx.send(embed=embed)
-
-        except Exception as e:
-            print(e)
-            await ctx.send("Something went wrong here. Contact support over at https://discord.gg/hMfgSaN")
-
-
-def setup(client):
-    client.add_cog(Admin_Commands(client))
+async def setup(client):
+    await client.add_cog(Admin_Commands(client))
