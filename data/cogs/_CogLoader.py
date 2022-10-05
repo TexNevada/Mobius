@@ -130,5 +130,5 @@ class _CogLoader(commands.Cog):
                 await ctx.send(f"OK! Unloaded: {arg}")
 
 
-async def setup(client):
+async def setup(client: commands.Bot):
     await client.add_cog(_CogLoader(client))

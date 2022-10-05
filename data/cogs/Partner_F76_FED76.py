@@ -176,5 +176,5 @@ class fed76(commands.Cog):
 
 
 # ends the extension
-async def setup(client) -> None:
+async def setup(client: commands.Bot) -> None:
     await client.add_cog(fed76(client))

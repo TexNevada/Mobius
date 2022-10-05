@@ -8,7 +8,7 @@ import configparser
 
 
 class Partner_F76_Plan_Collectors(commands.Cog):
-    def __init__(self, client: commands.AutoShardedBot) -> None:
+    def __init__(self, client: commands.Bot) -> None:
         self.client = client
         super().__init__()
 
@@ -156,5 +156,5 @@ class Partner_F76_Plan_Collectors(commands.Cog):
 
 
 # ends the extension
-async def setup(client) -> None:
+async def setup(client: commands.Bot) -> None:
     await client.add_cog(Partner_F76_Plan_Collectors(client))

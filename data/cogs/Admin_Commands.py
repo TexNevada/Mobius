@@ -129,5 +129,5 @@ class Admin_Commands(commands.Cog):
             await ctx.send(missing_perms)
 
 
-async def setup(client):
+async def setup(client: commands.Bot):
     await client.add_cog(Admin_Commands(client))
