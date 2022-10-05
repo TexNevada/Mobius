@@ -14,6 +14,7 @@ class fed76(commands.Cog):
 
     @app_commands.command(name="fed76", description="Look up Fallout 76 weapon prices on FED76!")
     async def fed(self, interaction: discord.Interaction, item: str, mods: str, grade: str = None):
+        print(f"A user requested the FED76 command")
         r = requests.get(f"https://fed76.info/pricing-api/?item={item}&mods={mods}&grade={grade}")
         try:
             x = r.json()
@@ -73,7 +74,6 @@ class fed76(commands.Cog):
 
             await interaction.response.send_message("Hmm. That didn't seem to work. Check abbreviations here: "
                                                     "https://fed76.info/i/discord-abbreviations/")
-
 
     @commands.command(aliases=["fed"])
     async def fed76(self, ctx, arg1=None, arg2=None, arg3=None):
