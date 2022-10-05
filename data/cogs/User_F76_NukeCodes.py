@@ -27,14 +27,36 @@ class User_F76_NukeCodes(commands.Cog):
         header = config["NukaCrypt"]["Header"]
         r = requests.post(url=f'https://nukacrypt.com/api/codes', data=json.loads(data), headers=json.loads(header))
         response = r.json()
-        code_response = f'Nuke codes reset every <t:{response["since_epoch"]+604800}:F> \n' \
+
+        embed = discord.Embed(color=0xe7e9d3, title="Fallout 76 Nuclear Codes")
+        embed.set_footer(text="Special thanks to https://nukacrypt.com/ for providing codes for all these years!")
+
+        if response["ALPHA"] == "34959739":
+            warning = "This is the notorious 8 day code week. Meaning the codes will last for 8 days and not 7. " \
+                      "Once per year, there is an overlap in nuke codes. That happens to be this week, " \
+                      "where there are 8 days instead of 7 days. When the codes reset. " \
+                      "We recommend that you wait 1 day to avoid confusion & " \
+                      "risk of potential loss of nuclear key cards."
+            embed.add_field(name="⚠️WARNING⚠️", value=warning, inline=False)
+        elif response["ALPHA"] == "45836295":
+            warning = "First day of code reset?\n" \
+                      "Please use the following codes instead.\n" \
+                      "**Alpha**: 34959739\n" \
+                      "**Bravo**: 33701503\n" \
+                      "**Charlie**2: 98469385\n" \
+                      "Why you might ask?\n" \
+                      "Last week was the notorious 8 day code week. " \
+                      "Meaning the codes will last for 8 days and not 7.\n" \
+                      "Once per year, there is an overlap in nuke codes. That happens to be last week, " \
+                      "where there are 8 days instead of 7 days."
+            embed.add_field(name="⚠️WARNING⚠️", value=warning, inline=False)
+        code_response = f'Nuke codes reset in <t:{response["since_epoch"]+604800}:R>\n' \
+                        f'which is every <t:{response["since_epoch"]+604800}:F> \n' \
                         f'**Alpha**: {response["ALPHA"]}\n' \
                         f'**Bravo**: {response["BRAVO"]}\n' \
                         f'**Charlie**: {response["CHARLIE"]}'
 
-        embed = discord.Embed(color=0xe7e9d3, title="Fallout 76 Nuclear Codes")
 
-        embed.set_footer(text="Special thanks to https://nukacrypt.com/ for providing codes for all these years!")
         # embed.set_image(url="")
         config = configparser.ConfigParser()
         config.read("./config.ini")
@@ -61,7 +83,8 @@ class User_F76_NukeCodes(commands.Cog):
         header = config["NukaCrypt"]["Header"]
         r = requests.post(url=f'https://nukacrypt.com/api/codes', data=json.loads(data), headers=json.loads(header))
         response = r.json()
-        code_response = f'Nuke codes reset every <t:{response["since_epoch"]+604800}:F> \n' \
+        code_response = f'Nuke codes reset in <t:{response["since_epoch"]+604800}:R>\n' \
+                        f'which is every <t:{response["since_epoch"]+604800}:F> \n' \
                         f'**Alpha**: {response["ALPHA"]}\n' \
                         f'**Bravo**: {response["BRAVO"]}\n' \
                         f'**Charlie**: {response["CHARLIE"]}'
