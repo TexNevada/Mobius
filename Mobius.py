@@ -87,7 +87,7 @@ logger.addHandler(handler)
 Prep files
 ===========
 """
-
+should_sync = input("Do you want to sync commands? [y/n]: ")
 dev_guild = discord.Object(id=config["APP"]["DevGuild"])
 
 intents = discord.Intents.all()
@@ -142,7 +142,8 @@ class MyClient(commands.AutoShardedBot):
         # Syncing
         #   VVV
         self.tree.copy_global_to(guild=dev_guild)
-        # await self.tree.sync()
+        if should_sync.lower() == "y":
+            await self.tree.sync()
 
 
 def get_prefix(client, message):
