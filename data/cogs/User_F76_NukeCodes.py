@@ -75,10 +75,6 @@ class User_F76_NukeCodes(commands.Cog):
         config.read("./config.ini")
         await ctx.send(config["LEGACY"]["UseSlash"])
 
-        # Command will still function for the time being.
-        config = configparser.ConfigParser()
-        config.read("./config.ini")
-
         data = config["NukaCrypt"]["API_key"]
         header = config["NukaCrypt"]["Header"]
         r = requests.post(url=f'https://nukacrypt.com/api/codes', data=json.loads(data), headers=json.loads(header))
