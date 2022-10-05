@@ -2,15 +2,72 @@
 import discord
 # Imports commands
 from discord.ext import commands
+from discord import app_commands
 import requests
+import configparser
 
 
 class Partner_F76_Plan_Collectors(commands.Cog):
-    def __init__(self, client):
+    def __init__(self, client: commands.AutoShardedBot) -> None:
         self.client = client
+        super().__init__()
+
+    @app_commands.command(name="tpc", description="Look up F76 plans using the plan collectors tool!")
+    async def tpc(self, interaction: discord.Interaction, search: str, page: str = None):
+        print(f"A user requested the Plan Collectors command")
+        requestUrl = f"https://fed76.info/plan-api/?q={search}"
+        try:
+            if page is not None:
+                if int(page) > 0:
+                    requestUrl += f"&o={page}"
+            requestUrl = requestUrl.replace(" ", "%20")
+            r = requests.get(requestUrl)
+            x = r.json()
+            if x["plan_count"] > 5:
+                embed = discord.Embed(color=0x477097,
+                                      title="Click this link to see full search results on the website",
+                                      url=x["link"])
+                embed.add_field(name=f"__**Message:**__", value=x['message'])
+            elif x['plan_count'] < 0:  # displays custom message
+                embed = discord.Embed(color=0x477097,
+                                      title="The Plan Collectors (click to visit)",
+                                      description=x['message'],
+                                      url=x["link"])
+                if x["image"]:
+                    embed.set_image(url=x["image"])
+            else:  # plans are only displayed if there's less than 6 of them, suggestion message is displayed otherwise
+                embed = discord.Embed(color=0x477097,
+                                      title="Plan Pricecheck",
+                                      url=x["link"])
+                if x['plans']:
+                    for plan in x["plans"]:
+                        if not plan["tradeable"]:
+                            embed.add_field(name=plan['name'], value=f"**Tradable:** False", inline=False)
+                        else:
+                            embed.add_field(name=plan['name'], value=plan['verdict'], inline=False)
+                else:
+                    embed.add_field(name='Unfortunately', value=x['message'], inline=False)
+            if x['warnings']:
+                embed.set_footer(text=("\n".join(x['warnings'])))
+            else:
+                embed.set_footer(text='The Plan Collectors')
+            embed.set_thumbnail(url=x["review"]["author"]["logo"])
+            # Bot runs the embed
+            await interaction.response.send_message(embed=embed)
+        except Exception as e:
+            print("==============TPC=ERROR==============")
+            # print(f"Request returned: {r.status_code}")
+            print("Most of the time this is a user input error")
+            print(e)
+            print("==================END==================")
+
+            await interaction.response.send_message("There seems to have been a connection error to The Plan Collectors Database. Please try again later")
 
     @commands.command(aliases=["TPC", "plan"])
     async def plancollectors(self, ctx, *, args=None):
+        config = configparser.ConfigParser()
+        config.read("./config.ini")
+        await ctx.send(config["LEGACY"]["UseSlash"])
         if args:
             try:
                 argumentWords = args.split(" ")
@@ -99,5 +156,5 @@ class Partner_F76_Plan_Collectors(commands.Cog):
 
 
 # ends the extension
-def setup(client):
-    client.add_cog(Partner_F76_Plan_Collectors(client))
+async def setup(client) -> None:
+    await client.add_cog(Partner_F76_Plan_Collectors(client))
