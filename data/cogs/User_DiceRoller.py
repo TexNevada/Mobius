@@ -4,15 +4,54 @@ Author: Tex Nevada
 Created: 18.04.19 - Europe
 Updated: 31.07.20 - Europe
 """
+import discord
 # Imports commands
 from discord.ext import commands
+from discord import app_commands
 # Allows for random numbers to be generated.
 import random
+import configparser
 
 
 class DiceRoller(commands.Cog):
-    def __init__(self, client):
+    def __init__(self, client: commands.Bot):
         self.client = client
+        super().__init__()
+
+    @app_commands.command(name="roll", description="Roll 1 or many dice between 1 & 100")
+    async def roll(self, interaction: discord.Interaction, number_of_dice: int, number_of_sides: int, multiplier: int = None):
+        print(f"A user requested the roll command")
+        # Prepping Error messages in advance
+        if number_of_dice < 100:
+            if number_of_dice > 0:
+                if number_of_sides < 10000:
+                    if number_of_sides > 2:
+                        result = []
+                        for x in range(0, int(number_of_dice)):
+                            rand = random.randrange(1, int(number_of_sides))
+                            result.append(rand)
+                        random_result = str(result)[1:-1]
+                        total_number = 0
+                        for num in result:
+                            total_number = num + total_number
+                        total = 'Total:'
+                        rolled = 'Rolled:'
+                        if multiplier != 0:
+                            total_number = total_number + multiplier
+                            FinalAnswer = f"{rolled} {random_result}, +{multiplier}\n" \
+                                          f"{total} {total_number}"
+                        else:
+                            FinalAnswer = f"{rolled} {random_result}\n" \
+                                          f"{total} {total_number}"
+                        await interaction.response.send_message(FinalAnswer)
+                    else:
+                        await interaction.response.send_message("You can't roll dice with sides that's below 2")
+                else:
+                    await interaction.response.send_message("You can only do below 10000 for the number of sides for the dice!")
+            else:
+                await interaction.response.send_message("You can't roll dice that's below 1")
+        else:
+            await interaction.response.send_message("You can only do below 100 dice!")
 
     @commands.command(aliases=["gmroll"])
     async def roll(self, ctx, arg1: str, *, arg2=None):
@@ -20,6 +59,9 @@ class DiceRoller(commands.Cog):
             print(f"A user requested the roll command in {ctx.guild.name}")
         else:
             print(f"A user requested the roll command in a private message")
+        config = configparser.ConfigParser()
+        config.read("./config.ini")
+        await ctx.send(config["LEGACY"]["UseSlash"])
         #
         # Prepping Error messages in advance
         Error = "Did you type it wrong? Example: `>roll 1d10` or `>roll 1d10 +10`"
@@ -82,5 +124,5 @@ class DiceRoller(commands.Cog):
             await ctx.send(Error)
 
 
-def setup(client):
-    client.add_cog(DiceRoller(client))
+async def setup(client: commands.Bot) -> None:
+    await client.add_cog(DiceRoller(client))
