@@ -11,7 +11,7 @@ config.read("./config.ini")
 
 
 class bethesdatracker(commands.Cog):
-    def __init__(self, client):
+    def __init__(self, client: commands.Bot) -> None:
         self.client = client
 
     @commands.command(name='togglebethesdatracker', aliases=["toggletracker", "bethesdatracker"])
@@ -67,5 +67,5 @@ class bethesdatracker(commands.Cog):
 
 
 # ends the extension
-def setup(client):
-    client.add_cog(bethesdatracker(client))
+async def setup(client: commands.Bot) -> None:
+    await client.add_cog(bethesdatracker(client))
