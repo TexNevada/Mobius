@@ -143,6 +143,7 @@ class MyClient(commands.AutoShardedBot):
         #   VVV
         self.tree.copy_global_to(guild=dev_guild)
         if should_sync.lower() == "y":
+            client.tree.clear_commands(guild=dev_guild)
             await self.tree.sync()
 
 
