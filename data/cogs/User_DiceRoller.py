@@ -19,6 +19,9 @@ class DiceRoller(commands.Cog):
         super().__init__()
 
     @app_commands.command(name="roll", description="Roll 1 up to 100 dice with support up to 10,000 sides!")
+    @app_commands.describe(dice="Allows you to input how many dice you wish to roll!",
+                           sides="Allows you to input how many sides on the dice you wish to have",
+                           multiplier="Will add whatever number you type in to the total amount")
     async def _roll(self, interaction: discord.Interaction, dice: int, sides: int, multiplier: int = None):
         print(f"A user requested the roll command")
         # print(self.qualified_name)

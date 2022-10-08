@@ -13,7 +13,9 @@ class Partner_F76_Plan_Collectors(commands.Cog):
         super().__init__()
 
     @app_commands.command(name="tpc", description="Look up F76 plans using the plan collectors tool!")
-    async def tpc(self, interaction: discord.Interaction, search: str, page: str = None):
+    @app_commands.describe(search="Search for any plan in the game!",
+                           page="Requires a number. Otherwise this will fail.")
+    async def tpc(self, interaction: discord.Interaction, search: str, page: int = None):
         print(f"A user requested the Plan Collectors command")
         requestUrl = f"https://fed76.info/plan-api/?q={search}"
         try:

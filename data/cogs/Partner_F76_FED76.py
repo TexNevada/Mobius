@@ -13,6 +13,9 @@ class fed76(commands.Cog):
         super().__init__()
 
     @app_commands.command(name="fed76", description="Look up Fallout 76 weapon prices on FED76!")
+    @app_commands.describe(item="Type in the item you wish to search for",
+                           mods="Type in the mod(s) you wish to look for. Example: uny/ap/sent",
+                           grade="Used with search of armor. Options are: [light, sturdy, heavy]")
     async def fed(self, interaction: discord.Interaction, item: str, mods: str, grade: str = None):
         print(f"A user requested the FED76 command")
         r = requests.get(f"https://fed76.info/pricing-api/?item={item}&mods={mods}&grade={grade}")
@@ -42,6 +45,9 @@ class fed76(commands.Cog):
             await interaction.response.send_message("There seems to have been a connection error to FED76. Please try again later")
 
     @app_commands.command(name="fed76info", description="Look up information about weapons & items!")
+    @app_commands.describe(item="Type in the item you wish to search for",
+                           mods="Type in the mod(s) you wish to look for. Example: uny/ap/sent",
+                           grade="Used with search of armor. Options are: [light, sturdy, heavy]")
     async def fed_info(self, interaction: discord.Interaction, item: str, mods: str = None, grade: str = None):
         print(f"A user requested the FED76INFO command")
 
