@@ -14,18 +14,21 @@ import configparser
 
 
 class DiceRoller(commands.Cog):
-    def __init__(self, client: commands.Bot):
+    def __init__(self, client: commands.Bot) -> None:
         self.client = client
         super().__init__()
 
-    @app_commands.command(name="roll", description="Roll 1 or many dice between 1 & 100")
-    async def roll(self, interaction: discord.Interaction, number_of_dice: int, number_of_sides: int, multiplier: int = None):
+    @app_commands.command(name="roll", description="Roll 1 up to 100 dice with support up to 10,000 sides!")
+    async def _roll(self, interaction: discord.Interaction, dice: int, sides: int, multiplier: int = None):
         print(f"A user requested the roll command")
+        # print(self.qualified_name)
         # Prepping Error messages in advance
+        number_of_dice = dice
+        number_of_sides = sides
         if number_of_dice < 100:
             if number_of_dice > 0:
                 if number_of_sides < 10000:
-                    if number_of_sides > 2:
+                    if number_of_sides > 1:
                         result = []
                         for x in range(0, int(number_of_dice)):
                             rand = random.randrange(1, int(number_of_sides))
@@ -36,7 +39,7 @@ class DiceRoller(commands.Cog):
                             total_number = num + total_number
                         total = 'Total:'
                         rolled = 'Rolled:'
-                        if multiplier != 0:
+                        if multiplier is not None:
                             total_number = total_number + multiplier
                             FinalAnswer = f"{rolled} {random_result}, +{multiplier}\n" \
                                           f"{total} {total_number}"
@@ -45,13 +48,13 @@ class DiceRoller(commands.Cog):
                                           f"{total} {total_number}"
                         await interaction.response.send_message(FinalAnswer)
                     else:
-                        await interaction.response.send_message("You can't roll dice with sides that's below 2")
+                        await interaction.response.send_message("You can't roll a dice with less then 2 sides", ephemeral=True)
                 else:
-                    await interaction.response.send_message("You can only do below 10000 for the number of sides for the dice!")
+                    await interaction.response.send_message("You can only roll dice with 10 000 sides or lower", ephemeral=True)
             else:
-                await interaction.response.send_message("You can't roll dice that's below 1")
+                await interaction.response.send_message("You can't roll 0 dice or negative dice!", ephemeral=True)
         else:
-            await interaction.response.send_message("You can only do below 100 dice!")
+            await interaction.response.send_message("You can only roll 100 dice or lower!", ephemeral=True)
 
     @commands.command(aliases=["gmroll"])
     async def roll(self, ctx, arg1: str, *, arg2=None):
