@@ -14,7 +14,7 @@ import configparser
 class User_F76_NukeCodes(commands.Cog):
     def __init__(self, client: commands.Bot) -> None:
         self.client = client
-        super().__init__() # Important for grouping Slash commands
+        super().__init__()  # Important for grouping Slash commands
 
     @app_commands.command(name="codes", description="Will output the current nuke codes for Fallout 76")
     async def codes(self, interaction: discord.Interaction) -> None:
