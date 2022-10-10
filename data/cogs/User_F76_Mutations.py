@@ -12,6 +12,10 @@ spell.word_frequency.load_text_file("./data/cogs_data/F76_Mutation_Word_List.txt
 
 # start of the extension as a class.
 class User_F76_Mutations(commands.Cog):
+    def __init__(self, client: commands.Bot) -> None:
+        self.client = client
+        super().__init__()
+
     @app_commands.command(name="mutation", description="Allows you to look up information about Fo76's mutations!")
     async def _mutation(self, interaction: discord.Interaction,
                         mutation: Literal["Adrenal Reaction", "Bird Bones", "Carnivore", "Chameleon", "Eagle Eyes",
@@ -51,10 +55,6 @@ class User_F76_Mutations(commands.Cog):
                               "You can find him here: https://www.deviantart.com/overshia")
         await interaction.response.send_message(embed=embed)
         c.close()
-
-    def __init__(self, client: commands.Bot) -> None:
-        self.client = client
-        super().__init__()
 
     @commands.command()
     async def mutation(self, ctx, *, arg: str):
