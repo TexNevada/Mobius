@@ -179,11 +179,6 @@ Slash commands procedure
 """
 
 
-@client.tree.command()
-async def ping(interaction: discord.Interaction):
-    await interaction.response.send_message("pong")
-
-
 @client.command()
 @is_owner()
 async def sync(ctx: commands.Context, guilds: commands.Greedy[discord.Object], spec=None) -> None:
