@@ -56,8 +56,6 @@ class User_F76_NukeCodes(commands.Cog):
                         f'**Bravo**: {response["BRAVO"]}\n' \
                         f'**Charlie**: {response["CHARLIE"]}'
 
-
-        # embed.set_image(url="")
         config = configparser.ConfigParser()
         config.read("./config.ini")
         embed.set_thumbnail(url=config["EDB.TOOLS"]["F76_NukeCodes"])
