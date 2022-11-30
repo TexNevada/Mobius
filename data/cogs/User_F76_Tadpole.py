@@ -30,14 +30,10 @@ class User_F76_Tadpole(commands.Cog):
 
         # You could see if the arg is equal to the list below though you want
         # people just to be able to search instantly for a question
-
         # Tadpole types
-
-
-        ### Help command is seperate and is not needed if that is what you meant :)
+        # Help command is separate and is not needed if that is what you meant :)
 
         # Sends list of categories if the argument don't match
-        # TODO: Add the spell error here
         if not category or category.title() not in tadpole_types:
             # Get a string of all types joined by a new line
             tadpole_types_str = "\n".join(tadpole_types)
