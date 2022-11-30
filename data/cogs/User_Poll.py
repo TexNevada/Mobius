@@ -84,6 +84,7 @@ class poll_command(commands.Cog):
                     #         await member.send("This vote is locked for a specific role!")
 
     @app_commands.command(description="Host your own poll for up to 20 answers!")
+    @app_commands.describe(vote_type="This defines if people can vote multiple times or only once!")
     async def poll(self, interaction: discord.Interaction,
                    vote_type: Literal["Single Vote", "Multiple Vote"],
                    question: str,
