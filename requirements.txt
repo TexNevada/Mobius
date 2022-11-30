@@ -1,5 +1,4 @@
-discord.py==1.7.3
-requests==2.25.1
-aiohttp==3.7.4.post0
-pyspellchecker==0.6.2
-mysql-connector-python==8.0.26
+discord.py==2.1.0
+requests==2.28.1
+mysql-connector-python==8.0.31
+pyspellchecker==0.7.0

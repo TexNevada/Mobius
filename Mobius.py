@@ -8,12 +8,14 @@ ReqInstaller.check()
 
 # Imports the rest of the modules
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
+from discord import app_commands
 import logging
 import os
 import glob
 from datetime import date, datetime
 import random
+from data.functions.heartbeat import heartbeat
 from data.functions.owner import is_owner
 import data.functions.ConfigSetup as ConfigSetup
 import configparser
@@ -85,31 +87,132 @@ logger.addHandler(handler)
 Prep files
 ===========
 """
+should_sync = input("Do you want to sync commands? [y/n]: ")
+dev_guild = discord.Object(id=config["APP"]["DevGuild"])
+
+intents = discord.Intents.all()
+intents.members = eval(APP["Members"])
+intents.presences = eval(APP["Presences"])
+intents.messages = eval(APP["Messages"])
+
+
+class MyClient(commands.AutoShardedBot):
+    def __init__(self):
+        super().__init__(intents=intents,
+                         command_prefix=get_prefix,
+                         help_command=None)
+
+    # # @tasks.loop(count=1)
+    # async def tree_sync(self):
+    #     # await client.load_extension("data.cogs._CogLoader")
+    #     client.tree.copy_global_to(guild=dev_guild)
+    #     await self.tree.sync(guild=dev_guild)
+
+    async def setup_hook(self) -> None:
+        #
+        # Loads the cog at the beginning
+        #           VVVVV
+
+        cogs = os.listdir("./data/cogs/")
+        # TODO: Remove last entry in list
+        for item in ["_CogLoader.py", "__init__.py", "__pycache__", "Unfinished cogs"]:
+            cogs.remove(item)
+        errors = []
+        passed = []
+        passed_chk = False
+        for cog in cogs:
+            cog = cog.split(".")
+            try:
+                await client.load_extension("data.cogs." + cog[0])
+                passed.append(cog[0])
+                passed_chk = True
+            except Exception as e:
+                errors.append(cog[0])
+                if config["APP"]["Debug"] == "DEBUG":
+                    print(e)
+        if bool(errors):
+            for cog in errors:
+                print(f"ERROR! Could not load the following `{cog}`")
+        if passed_chk is True:
+            for cog in passed:
+                print(f"OK! Loaded {cog}")
+        # await self.client.tree.sync(guild=discord.Object(id=704725246187536489))
+
+        #
+        # Syncing
+        #   VVV
+        self.tree.copy_global_to(guild=dev_guild)
+        if should_sync.lower() == "y":
+            client.tree.clear_commands(guild=dev_guild)
+            await self.tree.sync()
 
 
 def get_prefix(client, message):
     # if not message.guild:
     #     return commands.when_mentioned_or(*prefix)(client, message)
-    return commands.when_mentioned_or(*prefix)(client, message)
+    return commands.when_mentioned(client, message)
 
 
-intents = discord.Intents.default()
-intents.members = eval(APP["Members"])
-intents.presences = eval(APP["Presences"])
-client = commands.AutoShardedBot(
-    command_prefix=get_prefix,
-    status=discord.Status.dnd,
-    activity=discord.Game(name=boot_msg),
-    case_insensitive=eval(APP["Case_insensitive"]),
-    # The total number of shards to use between all clusters
-    # shard_count=4,
-    # Indicate what shard ID to use
-    # shard_ids=(0,),
-    intents=intents
-    )
+client = MyClient()
 
-# Here we are deleting the standard help function in discord to make our on in a embed later.
-client.remove_command("help")
+
+# client = commands.Bot(
+#     command_prefix=get_prefix,
+#     status=discord.Status.dnd,
+#     activity=discord.Game(name=boot_msg),
+#     case_insensitive=eval(APP["Case_insensitive"]),
+#     # The total number of shards to use between all clusters
+#     # shard_count=4,
+#     # Indicate what shard ID to use
+#     # shard_ids=(0,),
+#     intents=intents,
+#     application_id=APP["Application_ID"]
+#     )
+# # tree = app_commands.CommandTree(client)
+# # Here we are deleting the standard help function in discord to make our on in a embed later.
+# client.remove_command("help")
+
+"""
+============================
+Slash commands procedure
+============================
+"""
+
+
+@client.command()
+@is_owner()
+async def sync(ctx: commands.Context, guilds: commands.Greedy[discord.Object], spec=None) -> None:
+    if not guilds:
+        # sync current guild
+        if spec == "local":
+            synced = await client.tree.sync(guild=ctx.guild)
+        # copies all global app commands to current guild and syncs
+        elif spec == "global-to-local":
+            client.tree.copy_global_to(guild=ctx.guild)
+            synced = await client.tree.sync(guild=ctx.guild)
+        # clears all commands from the current guild target and syncs (removes guild commands)
+        elif spec == "clear-sync":
+            client.tree.clear_commands(guild=ctx.guild)
+            await client.tree.sync(guild=ctx.guild)
+            synced = []
+        else:
+            synced = await client.tree.sync()
+
+        await ctx.send(
+            f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}"
+        )
+        return
+
+    ret = 0
+    for guild in guilds:
+        try:
+            await client.tree.sync(guild=guild)
+        except discord.HTTPException:
+            pass
+        else:
+            ret += 1
+
+    await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.")
 
 """
 ============================
@@ -121,17 +224,22 @@ Login procedure for the bot
 # will print when the bot has connected to the server
 @client.event
 async def on_ready():
+
     # prints that the bot is ready with its username & id
     print(f"\nBot is ready"
           f"\nLogged in as"
           f"\nBot's name: {client.user.name}"
           f"\nBot id: {client.user.id}"
+          f"\nBot app id: {APP['Application_ID']}"
           f"\nDiscord.py version: {discord.__version__}"
           f"\n------"
           f"\nBot is serving: {str(len(client.guilds))} guilds.")
+    # await client.load_extension("data.cogs._CogLoader")
     await client.change_presence(status=discord.Status.online, activity=discord.Game(name=ready_msg))
     if config["LOGGING"]["Logs"] == "False":
         print("[WARN]: Logging is disabled! If this was a mistake. Please enable it in the config under LOGGING.")
+    if config["LOGGING"]["heartbeat_url"] != "":
+        client.loop.create_task(heartbeat())
 
 
 # starts a client.event
@@ -148,8 +256,13 @@ async def on_guild_join(guild):
     print(f"Bot is serving: {str(len(client.guilds))} guilds.")
 
 # Loads the Cogs Loader
-client.load_extension("data.cogs._CogLoader")
 
+
+@client.command()
+@is_owner()
+async def sync_slash(ctx):
+    await client.tree.sync(guild=discord.Object(id=704725246187536489))
+    await ctx.send("Synced!")
 
 """
 ============================
@@ -171,12 +284,10 @@ async def logout(ctx):
     await client.close()
 
 
-
 """
 ===========================
 This is the end of the client.
 ===========================
 """
+client.run(token, reconnect=True)
 
-# Checks token to login the bot into discord.
-client.run(token, bot=True, reconnect=True)

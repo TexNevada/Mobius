@@ -1,17 +1,12 @@
-# import discord py library
 import discord
-# Imports commands
 from discord.ext import commands
-# import permissions
-from discord import Webhook, RequestsWebhookAdapter
-import requests
 import time
 from data.functions.owner import is_owner
 from data.functions.MySQL_Connector import MyDB
 
 
 class owner(commands.Cog):
-    def __init__(self, client):
+    def __init__(self, client: commands.Bot) -> None:
         self.client = client
 
     @commands.command(aliases=["lam"])
@@ -136,5 +131,5 @@ class owner(commands.Cog):
         await ctx.send(f"This guild shard id: {ctx.guild.shard_id}")
 
 
-def setup(client):
-    client.add_cog(owner(client))
+async def setup(client):
+    await client.add_cog(owner(client))

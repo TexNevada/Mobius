@@ -6,8 +6,9 @@ import configparser
 config = configparser.ConfigParser()
 config.read("./config.ini")
 
+
 class Service_Statistics_Collection(commands.Cog):
-    def __init__(self, client):
+    def __init__(self, client: commands.Bot) -> None:
         self.client = client
 
     @commands.Cog.listener()
@@ -70,5 +71,5 @@ class Service_Statistics_Collection(commands.Cog):
         c.close()
 
 
-def setup(client):
-    client.add_cog(Service_Statistics_Collection(client))
+async def setup(client: commands.Bot) -> None:
+    await client.add_cog(Service_Statistics_Collection(client))

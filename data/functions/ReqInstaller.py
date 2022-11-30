@@ -14,5 +14,7 @@ def check():
     try:
         import discord
         import requests
+        import mysql.connector
+        import spellchecker
     except ImportError:
         installer()

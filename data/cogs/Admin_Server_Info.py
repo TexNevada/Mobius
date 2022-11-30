@@ -6,7 +6,6 @@ import math
 import datetime
 
 
-
 def convert_size(size_bytes):
     if size_bytes == 0:
         return "0B"
@@ -18,7 +17,7 @@ def convert_size(size_bytes):
 
 
 class Admin_Server_Info(commands.Cog):
-    def __init__(self, client):
+    def __init__(self, client: commands.Bot) -> None:
         self.client = client
 
     @commands.command()
@@ -128,5 +127,5 @@ class Admin_Server_Info(commands.Cog):
                            "View Audit Logs setting in the MODUS role")
 
 
-def setup(client):
-    client.add_cog(Admin_Server_Info(client))
+async def setup(client: commands.Bot) -> None:
+    await client.add_cog(Admin_Server_Info(client))

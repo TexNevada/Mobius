@@ -1,6 +1,5 @@
 # import discord library
 import discord
-# Imports commands
 from discord.ext import commands
 # Import permissions & error checks
 from discord.ext.commands.cooldowns import BucketType
@@ -9,10 +8,9 @@ import configparser
 
 
 class Service_Bot_Support(commands.Cog):
-    def __init__(self, client):
+    def __init__(self, client: commands.Bot) -> None:
         self.client = client
 
-    # @commands.before_invoke(channel_check)
     @commands.guild_only()
     @commands.cooldown(rate=1, per=7200, type=BucketType.channel)
     @commands.command()
@@ -75,5 +73,5 @@ class Service_Bot_Support(commands.Cog):
 
 
 # ends the extension
-def setup(client):
-    client.add_cog(Service_Bot_Support(client))
+async def setup(client: commands.Bot) -> None:
+    await client.add_cog(Service_Bot_Support(client))
