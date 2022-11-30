@@ -46,7 +46,6 @@ class User_Help_Commands(commands.Cog):
             # ==============================
             # Start of Admin Commands Embed
             # ==============================
-
             if ctx.author.guild_permissions.manage_channels:
                 c = MyDB("help")
                 c.execute("SELECT * FROM en_AdminHelpCommands")
@@ -92,11 +91,12 @@ class User_Help_Commands(commands.Cog):
                 # # sends embed
                 # await ctx.send(embed=embed)
                 # c.close()
-
             else:
                 await ctx.send(
                     "The regular help command has been deprecated in favor of the new slash commands which lists"
-                    "all commands when typing / and selecting MODUS from the side list")
+                    "all commands when typing / and selecting MODUS from the side list. If you are a administrator"
+                    "in a discord server then you should still be able to see the regular admin help commands.")
+
 
 
 async def setup(client: commands.Bot) -> None:
