@@ -20,7 +20,7 @@ class User_F76_Tadpole(commands.Cog):
         self.client = client
         super().__init__()
 
-    @app_commands.command(name="tadpole")
+    @app_commands.command(name="tadpole", description="Allows you to get the answer to the tadpole questions!")
     @app_commands.describe(category="Select one of the following categories in the list.",
                            search="Type in the question you got from the tadpole computer.")
     async def _tadpole(self, interaction: discord.Interaction,
