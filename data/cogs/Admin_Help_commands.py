@@ -98,6 +98,5 @@ class User_Help_Commands(commands.Cog):
                     "in a discord server then you should still be able to see the regular admin help commands.")
 
 
-
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(User_Help_Commands(client))
