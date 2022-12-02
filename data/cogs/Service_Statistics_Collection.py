@@ -13,7 +13,7 @@ class Service_Statistics_Collection(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        c = MyDB("essentials")
+        c = MyDB("essential")
         c.execute("INSERT INTO GuildTable (GuildID, GuildName, GuildOwnerID, GuildOwnerName, GuildJoinDate) "
                   "VALUES (%s, %s, %s, %s, %s)",
                   (guild.id, guild.name, guild.owner.id, guild.owner.name, guild.me.joined_at))
@@ -26,7 +26,7 @@ class Service_Statistics_Collection(commands.Cog):
         #
         # We delete data on those that do not wish to use this service.
         #
-        c = MyDB("essentials")
+        c = MyDB("essential")
         # Deletes guild ID from the main table
         c.execute("DELETE FROM GuildTable WHERE GuildID = %s", (guild.id,))
         tables = ["BethesdaTracker", "Fallout76NewsWebhooks", "ReactionRoles", "Fo76ServerStatusWebhooks"]
@@ -44,7 +44,7 @@ class Service_Statistics_Collection(commands.Cog):
         # For information:
         # before = A guild before a change
         # after = A guild after a change
-        c = MyDB("essentials")
+        c = MyDB("essential")
         c.execute("SELECT * FROM GuildTable WHERE GuildID = %s", (after.id,))
         response = c.fetchone()
         if not response:
