@@ -47,6 +47,7 @@ class Admin_Commands(commands.Cog):
     @has_permissions(manage_messages=True)
     # sees user wants to use the command clear.
     async def moveto(self, ctx, To_Channel: discord.TextChannel, amount: int, *, reason=None):
+        msg_limit = 150
         missing_perms = "I require the permission `manage webhooks` & " \
                         "`manage messages` to be able to move messages for you"
 
@@ -61,7 +62,7 @@ class Admin_Commands(commands.Cog):
 
         if ctx.author.guild.me.guild_permissions.manage_webhooks:
             if ctx.author.guild.me.guild_permissions.manage_messages:
-                if amount <= 30:
+                if amount <= msg_limit:
                     async with ctx.channel.typing():
                         users = []
                         messages = []
@@ -122,7 +123,7 @@ class Admin_Commands(commands.Cog):
                                                    avatar_url="https://cdn.edb.tools/MODUS_Project/images/Enclave/MODUS_smiling.jpg")
                             await webhook.delete()
                 else:
-                    await ctx.send("You can only move a maximum 30 messages")
+                    await ctx.send(f"You can only move a maximum {msg_limit} messages")
             else:
                 await ctx.send(missing_perms)
         else:
