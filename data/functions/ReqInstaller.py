@@ -16,5 +16,7 @@ def check():
         import requests
         import mysql.connector
         import spellchecker
+        import requests
+        import topgg
     except ImportError:
         installer()
