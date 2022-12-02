@@ -3,4 +3,4 @@ requests==2.28.1
 mysql-connector-python==8.0.31
 pyspellchecker==0.7.0
 requests==2.28.1
-topggpy=1.4.0
+topggpy==1.4.0
