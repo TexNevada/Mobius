@@ -1,5 +1,6 @@
 import requests
 import configparser
+import asyncio
 """
 =================================================
 Sends heartbeats to monitoring service
@@ -11,5 +12,7 @@ config = configparser.ConfigParser()
 config.read("./config.ini")
 
 
-def heartbeat():
-    requests.get(config["LOGGING"]["heartbeat_url"])
+async def heartbeat():
+    while True:
+        requests.get(config["LOGGING"]["heartbeat_url"])
+        await asyncio.sleep(60)
