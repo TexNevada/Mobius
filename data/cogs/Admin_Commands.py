@@ -55,7 +55,7 @@ class Admin_Commands(commands.Cog):
         if To_Channel == ctx.channel:
             await ctx.response.send_message("It seems you're trying to move the messages to the original channel")
             return False
-        elif not To_Channel.permissions_for(ctx.user.guild.me).manage_webhooks:
+        elif not To_Channel.permissions_for(ctx.author.guild.me).manage_webhooks:
             await ctx.send(f'I Require the permission "Manage Webhooks" on the {To_Channel} '
                            f'channel itself to be able to move messages for you.')
             return False
@@ -81,7 +81,7 @@ class Admin_Commands(commands.Cog):
                             if message.content != '' and not message.attachments:
                                 await webhook.send(username=message.author.name,
                                                    content=message.content,
-                                                   avatar_url=message.author.avatar_url)
+                                                   avatar_url=message.author.display_avatar.url)
                             # In case of attachments
                             elif message.attachments:
                                 is_image = False
@@ -95,11 +95,11 @@ class Admin_Commands(commands.Cog):
                                     else:
                                         await webhook.send(username=message.author.name,
                                                            content=message.content,
-                                                           avatar_url=message.author.avatar_url)
+                                                           avatar_url=message.author.display_avatar.url)
                                 else:
                                     await webhook.send(username=message.author.name,
                                                        content=message.content + "\n" + message.attachments[0].url,
-                                                       avatar_url=message.author.avatar_url)
+                                                       avatar_url=message.author.display_avatar.url)
                                 # In case of an attachment wait 1 seconds to make sure it is loaded before deleting
                                 # Because discord will delete the unused url so if we delete the original before giving
                                 # the new msg a second to register it will sometimes not work and post a not working url
