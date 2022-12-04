@@ -19,6 +19,9 @@ from data.functions.heartbeat import heartbeat
 from data.functions.owner import is_owner
 import data.functions.ConfigSetup as ConfigSetup
 import configparser
+import sys
+sys.path.append(".")
+from data.functions.MySQL_Connector import MyDB
 
 """
 =========
@@ -81,7 +84,6 @@ handler = logging.FileHandler(filename=log_name, encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
-
 """
 ===========
 Prep files
@@ -100,7 +102,8 @@ class MyClient(commands.AutoShardedBot):
     def __init__(self):
         super().__init__(intents=intents,
                          command_prefix=get_prefix,
-                         help_command=None)
+                         help_command=None,
+                         case_insensitive=eval(APP["Case_insensitive"]))
 
     # # @tasks.loop(count=1)
     # async def tree_sync(self):
@@ -148,9 +151,29 @@ class MyClient(commands.AutoShardedBot):
 
 
 def get_prefix(client, message):
-    # if not message.guild:
-    #     return commands.when_mentioned_or(*prefix)(client, message)
-    return commands.when_mentioned(client, message)
+    try:
+        if message.guild:
+            c = MyDB("Essential")
+            c.execute("SELECT * FROM GuildTable WHERE GuildID = %s", (message.guild.id,))
+            response = c.fetchone()
+            CustomPrefix = []
+            if response["Prefix"] is not None:
+                CustomPrefix.append(response["Prefix"])
+                prefix = CustomPrefix
+            else:
+                prefix = APP["Prefix"]
+            c.close()
+        else:
+            prefix = APP["Prefix"]
+    except:
+        prefix = APP["Prefix"]
+
+    if not message.guild:
+        return commands.when_mentioned_or(*prefix)(client, message)
+
+    # Allow users to @mention the bot instead of using a prefix when using a command. Also optional
+    # Do `return prefixes` if u don't want to allow mentions instead of prefix.
+    return commands.when_mentioned_or(*prefix)(client, message)
 
 
 client = MyClient()
