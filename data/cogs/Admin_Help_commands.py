@@ -22,6 +22,28 @@ Halloween_embed_url = "https://cdn.edb.tools/MODUS_Project/images/Enclave/MODUS-
 
 embed_url = Halloween_embed_url
 
+
+class prefix_check:
+    def __init__(guild, id):
+        guild.id = id
+
+    def pref(guild):
+        try:
+            # Referencing the help database for custom file
+            c = MyDB("Essential")
+            c.execute("SELECT * FROM GuildTable WHERE GuildID LIKE %s", ('{}'.format(guild.id),))
+            response = c.fetchone()
+            CustomPrefix = []
+            if response["Prefix"] is not None:
+                CustomPrefix.append(response["Prefix"])
+                prefix = CustomPrefix
+            else:
+                prefix = pre["prefix"]
+            c.close()
+        except:
+            prefix = pre["prefix"]
+        return prefix[0]
+
 """
 ==============================
 Beginning of discord commands
@@ -54,7 +76,11 @@ class User_Help_Commands(commands.Cog):
                 embed = discord.Embed(color=discord.Color.red(), title=":tools: Admin help commands!")
                 embed.set_thumbnail(url=embed_url)
 
-                prefix = "@MODUS "
+                try:
+                    x = prefix_check(ctx.guild.id)
+                    prefix = x.pref()
+                except:
+                    prefix = config["APP"]["prefix"]
 
                 # Loop every entry in the database
                 for entry in response:
