@@ -131,5 +131,5 @@ class owner(commands.Cog):
         await ctx.send(f"This guild shard id: {ctx.guild.shard_id}")
 
 
-async def setup(client):
+async def setup(client: commands.Bot):
     await client.add_cog(owner(client))
