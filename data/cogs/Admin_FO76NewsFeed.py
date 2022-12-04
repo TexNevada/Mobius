@@ -64,7 +64,7 @@ class FO76NewsFeed(commands.Cog):
                     c.execute("INSERT INTO Fallout76NewsWebhooks "
                               "(GuildID, GuildName, ChannelID, ChannelName, WebhookID, WebHookURL, LanguageCheck) "
                               "VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                              (ctx.guild.id, ctx.guild.name, ctx.channel.id, ctx.channel.name, webhook.id, webhook.url, Language))
+                              (ctx.guild.id, ctx.guild.name, ctx.channel.id, ctx.channel.name, webhook.id, webhook.url, "en"))
                     c.commit()
                     await ctx.send(f"Fallout 76 news will now be displayed in {ctx.channel.name}")
                 except discord.errors.Forbidden:
