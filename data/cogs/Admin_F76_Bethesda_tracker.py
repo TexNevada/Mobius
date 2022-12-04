@@ -14,7 +14,7 @@ class bethesdatracker(commands.Cog):
     def __init__(self, client: commands.Bot) -> None:
         self.client = client
 
-    @commands.command(name='togglebethesdatracker', aliases=["toggletracker", "bethesdatracker"])
+    @commands.command(name='togglebethesdatracker', aliases=["bethesdatracker"])
     @has_permissions(manage_channels=True)
     async def togglebethesdatracker(self, ctx):
         print(f"A admin toggled the dev tracker in {ctx.guild.name}")
