@@ -43,4 +43,9 @@ class MyDB:
         self._db_connection.close()
 
     def __del__(self):
-        self._db_connection.close()
+        try:
+            self._db_connection.close()
+        except AttributeError:
+            pass
+        except Exception as e:
+            print(f"SQL ERROR: {e}")
