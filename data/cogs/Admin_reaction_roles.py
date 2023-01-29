@@ -113,7 +113,7 @@ class reactionrole(commands.Cog):
     # Starts a event with the bot
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        c = MyDB("Essential")
+        c = MyDB("essential")
         c.charset(charset="utf8mb4", collation="utf8mb4_unicode_ci")
         c.execute("SELECT * FROM ReactionRoles WHERE messageID = %s and Emoji = %s", (payload.message_id, str(payload.emoji)))
         results = c.fetchall()
@@ -170,7 +170,7 @@ class reactionrole(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
-        c = MyDB("Essential")
+        c = MyDB("essential")
         c.charset(charset="utf8mb4", collation="utf8mb4_unicode_ci")
         c.execute("SELECT * FROM ReactionRoles WHERE messageID = %s and Emoji = %s", (payload.message_id, str(payload.emoji)))
         results = c.fetchall()
@@ -253,7 +253,7 @@ class reactionrole(commands.Cog):
                 await ctx.send(response)
         # Reaction roles code runs here
         if input_check is False:
-            c = MyDB("Essential")
+            c = MyDB("essential")
             c.charset(charset="utf8mb4", collation="utf8mb4_unicode_ci")
             c.execute('SELECT * FROM ReactionRoles where channelID = %s and messageID = %s',
                       (ctx.channel.id, message_id))
@@ -307,11 +307,18 @@ class reactionrole(commands.Cog):
                                 response = reaction_error_response("Wrong messageID", message_id, guild_id=ctx.guild.id)
                                 await ctx.send(response)
                             else:
-                                # Remove useless code
-                                sql = "INSERT INTO ReactionRoles (GuildID,GuildName,ChannelID,ChannelName,messageID,Role,Emoji) VALUES(%s,%s,%s,%s,%s,%s,%s)"
-                                sql_silent = "INSERT INTO ReactionRoles (GuildID,GuildName,ChannelID,ChannelName,messageID,Role,Emoji,silent) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"
-                                sql_values = (ctx.guild.id, ctx.guild.name, ctx.channel.id, ctx.channel.name, message_id, role, emoji)
-                                sql_values_silent = (ctx.guild.id, ctx.guild.name, ctx.channel.id, ctx.channel.name, message_id, role, emoji, silent)
+                                if silent is not None:
+                                    if silent == "Silent" or silent == "SILENT":
+                                        silent = "silent"
+                                        sql = "INSERT INTO ReactionRoles (GuildID,GuildName,ChannelID,ChannelName,messageID,Role,Emoji,silent) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"
+                                        sql_values = (ctx.guild.id, ctx.guild.name, ctx.channel.id, ctx.channel.name, message_id, role, emoji, silent)
+                                    else:
+                                        sql = "INSERT INTO ReactionRoles (GuildID,GuildName,ChannelID,ChannelName,messageID,Role,Emoji) VALUES(%s,%s,%s,%s,%s,%s,%s)"
+                                        sql_values = (ctx.guild.id, ctx.guild.name, ctx.channel.id, ctx.channel.name, message_id, role, emoji)
+
+                                else:
+                                    sql = "INSERT INTO ReactionRoles (GuildID,GuildName,ChannelID,ChannelName,messageID,Role,Emoji) VALUES(%s,%s,%s,%s,%s,%s,%s)"
+                                    sql_values = (ctx.guild.id, ctx.guild.name, ctx.channel.id, ctx.channel.name, message_id, role, emoji)
                                 if '<' not in emoji:
                                     # emoji is text make sure it doesnt match this regex
                                     match = re.search('[a-zA-Z1-9]*', emoji)
@@ -322,10 +329,7 @@ class reactionrole(commands.Cog):
                                             pass
                                         await message.add_reaction(emoji)
                                         await ctx.send(f"ReactionRole now set for {role} with emoji: {emoji}.")
-                                        if "silent" in silent:
-                                            c.execute(sql_silent, sql_values_silent)
-                                        else:
-                                            c.execute(sql, sql_values)
+                                        c.execute(sql, sql_values)
                                     else:
                                         # TODO: Its not the square emoji and it needs an error output. This needs testing
                                         await ctx.send("Well that\'s odd. Something you did didn't work. Contact support. You can use the `>support` command to get the link for the support server")
@@ -338,19 +342,13 @@ class reactionrole(commands.Cog):
                                     for emoji_entry in self.client.emojis:
                                         if emojiID == emoji_entry.id:
                                             emoji_check = True
-                                            if "silent" in silent:
-                                                c.execute(sql_silent, sql_values_silent)
-                                            else:
-                                                c.execute(sql, sql_values)
+                                            c.execute(sql, sql_values)
                                             await message.add_reaction(emoji_entry)
                                             response = reaction_response("Reaction Role Set", role, emoji)
                                             await ctx.send(response)
                                     if emoji_check is False:
                                         try:
-                                            if "silent" in silent:
-                                                c.execute(sql_silent, sql_values_silent)
-                                            else:
-                                                c.execute(sql, sql_values)
+                                            c.execute(sql, sql_values)
                                             await message.add_reaction(emoji)
                                             response = reaction_response("Reaction Role Set", role, emoji)
                                             await ctx.send(response)
