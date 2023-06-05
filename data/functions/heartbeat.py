@@ -14,5 +14,5 @@ config.read("./config.ini")
 
 async def heartbeat():
     while True:
-        requests.get(config["LOGGING"]["heartbeat_url"])
+        requests.get(config["Logging"]["heartbeat_url"])
         await asyncio.sleep(60)
