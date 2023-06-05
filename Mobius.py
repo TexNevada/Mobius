@@ -3,25 +3,31 @@
 # To run this code
 # Python 3.8 64bit or higher is required.
 # Checks if all requirements are installed. If not it will install them.
+
 import data.functions.ReqInstaller as ReqInstaller
 ReqInstaller.check()
 
 # Imports the rest of the modules
 import discord
 from discord.ext import commands, tasks
-from discord import app_commands
-import logging
+# from discord import app_commands
 import os
-import glob
-from datetime import date, datetime
-import random
-from data.functions.heartbeat import heartbeat
-from data.functions.owner import is_owner
-import data.functions.ConfigSetup as ConfigSetup
 import configparser
 import sys
-sys.path.append(".")
+from colorama import init, Fore
+# import glob
+# from datetime import date, datetime
+# import random
+
+import data.functions.ConfigSetup as ConfigSetup
+from data.functions.heartbeat import heartbeat
+from data.functions.owner import is_owner
+from data.functions.config import version as mobius_version
 from data.functions.MySQL_Connector import MyDB
+from data.functions.logging import get_log
+init(autoreset=True)
+sys.path.append(".")
+logger = get_log(__name__)
 
 """
 =========
@@ -40,56 +46,24 @@ APP = config["APP"]
 
 Environment = APP["Environment"]
 token = APP["Token"]
-Debug = APP["Debug"]
 prefix = APP["Prefix"]
 boot_msg = APP["Boot_msg"]
 ready_msg = APP["Ready_msg"]
 bot_name = APP["Bot_Name"]
 
-log_location = config["LOGGING"]["Log"]
+log_location = config["Logging"]["Log"]
 log_name = log_location+bot_name+".log"
-
-"""
-=========
-Logging
-=========
-"""
-
-if Environment == "Dev":
-    print("~~You are running a development version!~~\n"
-          "~~It should not be used for production!~~")
-
-
-if config["LOGGING"]["Logs"] == "True":
-    files = glob.glob(log_name)
-    now = datetime.now()
-    time = now.strftime("%H.%M.%S")
-    for file in files:
-        split = file.split(".")
-        new_name = "{} {} {}.log".format(split[0], date.today(), time)
-        try:
-            os.rename(file, new_name)
-        except:
-            new_name = "{} {} {} Random {}.log".format(split[0], date.today(), time, random.randint(1, 10000))
-            os.replace(file, new_name)
-
-if Debug == "DEBUG":
-    LogLevel = logging.DEBUG
-else:
-    LogLevel = logging.WARNING
-
-logger = logging.getLogger('discord')
-logger.setLevel(LogLevel)
-handler = logging.FileHandler(filename=log_name, encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-logger.addHandler(handler)
+loaded_cogs = []
 
 """
 ===========
 Prep files
 ===========
 """
-should_sync = input("Do you want to sync commands? [y/n]: ")
+if eval(APP["sync_prompt"]) is True:
+    should_sync = input("Do you want to sync commands? [y/n]: ")
+else:
+    should_sync = "n"
 dev_guild = discord.Object(id=config["APP"]["DevGuild"])
 
 intents = discord.Intents.all()
@@ -111,37 +85,81 @@ class MyClient(commands.AutoShardedBot):
     #     client.tree.copy_global_to(guild=dev_guild)
     #     await self.tree.sync(guild=dev_guild)
 
+    # async def setup_hook(self) -> None:
+    #     #
+    #     # Loads the cog at the beginning
+    #     #           VVVVV
+    #
+    #     cogs = os.listdir("./data/cogs/")
+    #     # TODO: Remove last entry in list
+    #     exception_list = ["_CogLoader.py", "__init__.py", "__pycache__", "Unfinished cogs"]
+    #     for item in exception_list:
+    #         cogs.remove(item)
+    #     errors = []
+    #     passed = []
+    #     passed_chk = False
+    #     for cog in cogs:
+    #         cog = cog.split(".")
+    #         try:
+    #             await client.load_extension("data.cogs." + cog[0])
+    #             passed.append(cog[0])
+    #             loaded_cogs.append(cog[0])
+    #             passed_chk = True
+    #         except Exception as e:
+    #             errors.append(cog[0])
+    #             if config["APP"]["Debug"] == "DEBUG":
+    #                 logger.info(e)
+    #     if bool(errors):
+    #         for cog in errors:
+    #             logger.info(f"{Fore.LIGHTWHITE_EX}[{Fore.RED}ERROR{Fore.LIGHTWHITE_EX}] Could not load the following `{cog}`")
+    #     if passed_chk is True:
+    #         for cog in passed:
+    #             logger.info(f"{Fore.LIGHTWHITE_EX}[{Fore.GREEN}OK{Fore.LIGHTWHITE_EX}] Loaded {cog}")
+    #     # await self.client.tree.sync(guild=discord.Object(id=704725246187536489))
+    #
+    #     #
+    #     # Syncing
+    #     #   VVV
+    #     self.tree.copy_global_to(guild=dev_guild)
+    #     if should_sync.lower() == "y":
+    #         client.tree.clear_commands(guild=dev_guild)
+    #         await self.tree.sync()
+
     async def setup_hook(self) -> None:
         #
         # Loads the cog at the beginning
         #           VVVVV
 
-        cogs = os.listdir("./data/cogs/")
-        # TODO: Remove last entry in list
-        for item in ["_CogLoader.py", "__init__.py", "__pycache__", "Unfinished cogs"]:
-            cogs.remove(item)
+        exception_list = ["_CogLoader.py", "__init__.py", "__pycache__", "Unfinished cogs"]
+
+        async def load_cogs(folder, import_path="data.cogs"):
+            for filename in os.listdir(folder):
+                if filename not in exception_list:
+                    filepath = os.path.join(folder, filename)
+                    if os.path.isfile(filepath) and filename.endswith('.py'):
+                        cog_name = os.path.splitext(filename)[0]
+                        full_import_path = f"{import_path}.{cog_name}"
+                        try:
+                            await client.load_extension(full_import_path)
+                            loaded_cogs.append(cog_name)
+                            logger.info(f"{Fore.LIGHTWHITE_EX}[{Fore.GREEN}OK{Fore.LIGHTWHITE_EX}] Loaded {cog_name}")
+                        except Exception as e:
+                            errors.append(cog_name)
+                            if config["APP"]["Debug"] == "DEBUG":
+                                logger.info(e)
+                    elif os.path.isdir(filepath):
+                        new_import_path = f"{import_path}.{filename}"
+                        await load_cogs(filepath, import_path=new_import_path)
+
         errors = []
-        passed = []
-        passed_chk = False
-        for cog in cogs:
-            cog = cog.split(".")
-            try:
-                await client.load_extension("data.cogs." + cog[0])
-                passed.append(cog[0])
-                passed_chk = True
-            except Exception as e:
-                errors.append(cog[0])
-                if config["APP"]["Debug"] == "DEBUG":
-                    print(e)
+        loaded_cogs = []
+        await load_cogs("./data/cogs/")
+
         if bool(errors):
             for cog in errors:
-                print(f"ERROR! Could not load the following `{cog}`")
-        if passed_chk is True:
-            for cog in passed:
-                print(f"OK! Loaded {cog}")
-        # await self.client.tree.sync(guild=discord.Object(id=704725246187536489))
+                logger.info(
+                    f"{Fore.LIGHTWHITE_EX}[{Fore.RED}ERROR{Fore.LIGHTWHITE_EX}] Could not load the following `{cog}`")
 
-        #
         # Syncing
         #   VVV
         self.tree.copy_global_to(guild=dev_guild)
@@ -247,21 +265,53 @@ Login procedure for the bot
 # will print when the bot has connected to the server
 @client.event
 async def on_ready():
+    logger.info("")
+    logger.info(f"{Fore.GREEN}#" * 110)
+    logger.info(f"{Fore.GREEN}#" * 110 + "\n")
 
+    if os.path.isfile("./data/functions/ascii.py"):
+        import data.functions.ascii as ascii # noqa
+        ascii.run()
+    else:
+        logger.info(f"{Fore.LIGHTGREEN_EX} ███╗   ███╗ ██████╗ ██████╗ ██╗██╗   ██╗███████╗     ██████╗ ██████╗ ██████╗ ███████╗") # noqa
+        logger.info(f"{Fore.LIGHTGREEN_EX} ████╗ ████║██╔═══██╗██╔══██╗██║██║   ██║██╔════╝    ██╔════╝██╔═══██╗██╔══██╗██╔════╝") # noqa
+        logger.info(f"{Fore.LIGHTGREEN_EX} ██╔████╔██║██║   ██║██████╔╝██║██║   ██║███████╗    ██║     ██║   ██║██████╔╝█████╗") # noqa
+        logger.info(f"{Fore.LIGHTGREEN_EX} ██║╚██╔╝██║██║   ██║██╔══██╗██║██║   ██║╚════██║    ██║     ██║   ██║██╔══██╗██╔══╝") # noqa
+        logger.info(f"{Fore.LIGHTGREEN_EX} ██║ ╚═╝ ██║╚██████╔╝██████╔╝██║╚██████╔╝███████║    ╚██████╗╚██████╔╝██║  ██║███████╗") # noqa
+        logger.info(f"{Fore.LIGHTGREEN_EX} ╚═╝     ╚═╝ ╚═════╝ ╚═════╝ ╚═╝ ╚═════╝ ╚══════╝     ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝") # noqa
+
+    if Environment == "Dev":
+        logger.info("  ~~You are running a development version!~~\n"
+                    "  ~~It should not be used for production!~~")
+    guilds = client.guilds
+    total_members = []
+    for members in guilds:
+        for member in members.members._SequenceProxy__copied: # noqa
+            if member not in total_members:
+                total_members.append(member)
+    activeServers = client.guilds
+    sum = 0
+    for s in activeServers:
+        sum += len(s.members)
+        # total_members += len(members.members)
     # prints that the bot is ready with its username & id
-    print(f"\nBot is ready"
-          f"\nLogged in as"
-          f"\nBot's name: {client.user.name}"
-          f"\nBot id: {client.user.id}"
-          f"\nBot app id: {APP['Application_ID']}"
-          f"\nDiscord.py version: {discord.__version__}"
-          f"\n------"
-          f"\nBot is serving: {str(len(client.guilds))} guilds.")
+    logger.info(f"  {Fore.LIGHTWHITE_EX}Mobius version: {Fore.GREEN}{mobius_version()}")
+    logger.info(f"  {Fore.LIGHTWHITE_EX}Discord.py version:{Fore.GREEN} {discord.__version__}")
+    logger.info(f"  {Fore.LIGHTWHITE_EX}------")
+    logger.info(f"  {Fore.LIGHTWHITE_EX}Bot's name:{Fore.GREEN} {client.user.name}")
+    logger.info(f"  {Fore.LIGHTWHITE_EX}Bot id:{Fore.GREEN} {client.user.id}")
+    logger.info(f"  {Fore.LIGHTWHITE_EX}Loaded cogs: {Fore.GREEN}{len(loaded_cogs)}")
+    logger.info(f"  {Fore.LIGHTWHITE_EX}Bot is currently serving:{Fore.GREEN} {len(client.guilds)} {Fore.LIGHTWHITE_EX}guilds.") # noqa
+    logger.info(f"  {Fore.LIGHTWHITE_EX}Bot is currently serving:{Fore.GREEN} {len(total_members)} {Fore.LIGHTWHITE_EX}members across all guilds.") # noqa
+    logger.info("")
+    logger.info(f"{Fore.GREEN}#" * 110)
+    logger.info(f"{Fore.GREEN}#" * 110)
     # await client.load_extension("data.cogs._CogLoader")
     await client.change_presence(status=discord.Status.online, activity=discord.Game(name=ready_msg))
-    if config["LOGGING"]["Logs"] == "False":
-        print("[WARN]: Logging is disabled! If this was a mistake. Please enable it in the config under LOGGING.")
-    if config["LOGGING"]["heartbeat_url"] != "":
+    if config["Logging"]["Logs"] == "False":
+        logger.info(f"{Fore.LIGHTWHITE_EX}[{Fore.YELLOW}WARNING{Fore.LIGHTWHITE_EX}]: Logging is disabled! If this was a mistake. " # noqa
+                    f"Please enable it in the config under LOGGING.")
+    if config["Logging"]["heartbeat_url"] != "":
         client.loop.create_task(heartbeat())
 
 
@@ -276,7 +326,7 @@ async def on_message(message):
 @client.event
 async def on_guild_join(guild):
     # await client.change_presence(status=discord.Status.online, activity=discord.Game(name=">help or @MODUS help"))
-    print(f"Bot is serving: {str(len(client.guilds))} guilds.")
+    logger.info(f"Bot is serving: {str(len(client.guilds))} guilds.")
 
 # Loads the Cogs Loader
 
@@ -300,7 +350,7 @@ Logs the bot out of discord
 @is_owner()
 # defines a new function call logout
 async def logout(ctx):
-    print("\nBot logout requested. Shutting down...\n")
+    logger.info("\nBot logout requested. Shutting down...\n")
     await ctx.send("Logging out.")
     await client.change_presence(status=discord.Status.invisible)
     # tells the bot to logout
