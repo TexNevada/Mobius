@@ -1,0 +1,15 @@
+#! usr/bin/env python3
+from colorama import init, Fore
+from data.functions.logging import get_log
+
+init(autoreset=True)
+logger = get_log(__name__)
+
+
+def run():
+    logger.info(f"{Fore.LIGHTGREEN_EX}  ███╗   ███╗ ██████╗ ██████╗ ██╗   ██╗███████╗    ██████╗ ██████╗  ██████╗      ██╗███████╗ ██████╗████████╗")
+    logger.info(f"{Fore.LIGHTGREEN_EX}  ████╗ ████║██╔═══██╗██╔══██╗██║   ██║██╔════╝    ██╔══██╗██╔══██╗██╔═══██╗     ██║██╔════╝██╔════╝╚══██╔══╝")
+    logger.info(f"{Fore.LIGHTGREEN_EX}  ██╔████╔██║██║   ██║██║  ██║██║   ██║███████╗    ██████╔╝██████╔╝██║   ██║     ██║█████╗  ██║        ██║")
+    logger.info(f"{Fore.LIGHTGREEN_EX}  ██║╚██╔╝██║██║   ██║██║  ██║██║   ██║╚════██║    ██╔═══╝ ██╔══██╗██║   ██║██   ██║██╔══╝  ██║        ██║")
+    logger.info(f"{Fore.LIGHTGREEN_EX}  ██║ ╚═╝ ██║╚██████╔╝██████╔╝╚██████╔╝███████║    ██║     ██║  ██║╚██████╔╝╚█████╔╝███████╗╚██████╗   ██║")
+    logger.info(f"{Fore.LIGHTGREEN_EX}  ╚═╝     ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝ ╚══════╝    ╚═╝     ╚═╝  ╚═╝ ╚═════╝  ╚════╝ ╚══════╝ ╚═════╝   ╚═╝  ")
