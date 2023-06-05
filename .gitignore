@@ -1,5 +1,6 @@
 #Mobius Project
 config.ini
+ascii.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
