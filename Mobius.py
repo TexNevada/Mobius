@@ -145,7 +145,7 @@ class MyClient(commands.AutoShardedBot):
                             logger.info(f"{Fore.LIGHTWHITE_EX}[{Fore.GREEN}OK{Fore.LIGHTWHITE_EX}] Loaded {cog_name}")
                         except Exception as e:
                             errors.append(cog_name)
-                            if config["APP"]["Debug"] == "DEBUG":
+                            if Environment == "Dev":
                                 logger.info(e)
                     elif os.path.isdir(filepath):
                         new_import_path = f"{import_path}.{filename}"
