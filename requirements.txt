@@ -1,6 +1,6 @@
-discord.py==2.2.3
-requests==2.31.0
-mysql-connector-python==8.0.33
-pyspellchecker==0.7.1
+discord.py>=2.3.2
+requests>=2.31.0
+mysql-connector-python>=8.1.0
+pyspellchecker>=0.7.1
 topggpy==1.4.0
-colorama==0.4.6
+colorama>=0.4.6
