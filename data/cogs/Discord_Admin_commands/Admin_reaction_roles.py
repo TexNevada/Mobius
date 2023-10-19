@@ -35,7 +35,7 @@ def role_check(sql_results, payload, guild, reaction_type):
         # Send the ID back to get the role format
         role = guild.get_role(roleID)
         # Check to see if user has the role already in loop below
-        user_roles = get_user_from_guild(guild, payload.user_id)
+        user_roles = get_user_from_guild(guild, payload.user_id).roles
         has_role = False
         for guild_role in user_roles:
             if guild_role == role:
