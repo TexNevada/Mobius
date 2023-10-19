@@ -331,8 +331,14 @@ class reactionrole(commands.Cog):
                                         await ctx.send(f"ReactionRole now set for {role} with emoji: {emoji}.")
                                         c.execute(sql, sql_values)
                                     else:
-                                        # TODO: Its not the square emoji and it needs an error output. This needs testing
-                                        await ctx.send("Well that\'s odd. Something you did didn't work. Contact support. You can use the `>support` command to get the link for the support server")
+                                        try:
+                                            await message.add_reaction(emoji)
+                                            await ctx.send(f"ReactionRole now set for {role} with emoji: {emoji}.")
+                                            c.execute(sql, sql_values)
+                                        except Exception as e:
+                                            print(e)
+                                            # TODO: Its not the square emoji and it needs an error output. This needs testing
+                                            await ctx.send("Well that\'s odd. Something you did didn't work. Contact support. You can use the `>support` command to get the link for the support server")
                                 else:
                                     # customEmoji = True
                                     emoji_check = False
