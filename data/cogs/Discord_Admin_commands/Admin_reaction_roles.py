@@ -16,6 +16,12 @@ import sys
 sys.path.append(".")
 from data.functions.MySQL_Connector import MyDB
 
+# TODO Create and move to a common utils?
+def get_user_from_guild(guild,user_id):
+    user = guild.get_member(user_id) # We have the right intents, still returns None sometimes
+    if not user:
+        user = guild.fetch_member(user_id)
+    return user
 
 def role_check(sql_results, payload, guild, reaction_type):
     roles = []
@@ -29,7 +35,7 @@ def role_check(sql_results, payload, guild, reaction_type):
         # Send the ID back to get the role format
         role = guild.get_role(roleID)
         # Check to see if user has the role already in loop below
-        user_roles = guild.get_member(payload.user_id).roles
+        user_roles = get_user_from_guild(guild, payload.user_id).roles
         has_role = False
         for guild_role in user_roles:
             if guild_role == role:
@@ -136,7 +142,7 @@ class reactionrole(commands.Cog):
             # Gets the guild context by looking up the guild using payload guild ID
             guild = self.client.get_guild(payload.guild_id)
             # Gets the user's by looking the user up using payload user ID
-            user = guild.get_member(payload.user_id)
+            user = get_user_from_guild(guild, payload.user_id)
             # Sends results, payload, guild & reaction event for processing roles and role names
             return_list = role_check(results, payload, guild, "add")
             # List of roles from role_check
@@ -192,7 +198,7 @@ class reactionrole(commands.Cog):
             # Gets the guild context by looking up the guild using payload guild ID
             guild = self.client.get_guild(payload.guild_id)
             # Gets the user's by looking the user up using payload user ID
-            user = guild.get_member(payload.user_id)
+            user = get_user_from_guild(guild, payload.user_id)
             # Sends results, payload, guild & reaction event for processing roles and role names
             return_list = role_check(results, payload, guild, "remove")
             # List of roles from role_check
