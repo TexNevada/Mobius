@@ -8,20 +8,14 @@ This is old code and will most likely be deprecated in the future when discord a
 # import discord library
 import discord
 # Imports commands
-from discord.ext import commands, tasks
+from discord.ext import commands
 from discord.ext.commands import has_permissions
 import re
 # Importing our own MySQL prebuilt connection
 import sys
 sys.path.append(".")
 from data.functions.MySQL_Connector import MyDB
-
-# TODO Create and move to a common utils?
-async def get_user_from_guild(guild,user_id):
-    user = guild.get_member(user_id) # We have the right intents, still returns None sometimes
-    if not user:
-        user = await guild.fetch_member(user_id)
-    return user
+from data.functions.utils import get_user_from_guild
 
 async def role_check(sql_results, payload, guild, reaction_type):
     roles = []
