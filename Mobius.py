@@ -337,6 +337,16 @@ async def sync_slash(ctx):
     await client.tree.sync(guild=discord.Object(id=704725246187536489))
     await ctx.send("Synced!")
 
+
+@client.command()
+@is_owner()
+async def test(ctx, emoji):
+    #logger.info(ctx.guild)
+    #logger.info(ctx.guild.roles)
+    logger.info(emoji)
+    await ctx.send(emoji)
+
+
 """
 ============================
 Logs the bot out of discord
