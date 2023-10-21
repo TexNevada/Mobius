@@ -13,10 +13,9 @@ def installer():
 def check():
     try:
         import discord
-        import requests
+        import aiohttp
         import mysql.connector
         import spellchecker
-        import requests
         import topgg
     except ImportError:
         installer()
