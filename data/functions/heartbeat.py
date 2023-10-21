@@ -1,4 +1,4 @@
-import requests
+import aiohttp
 import configparser
 import asyncio
 """
@@ -14,5 +14,6 @@ config.read("./config.ini")
 
 async def heartbeat():
     while True:
-        requests.get(config["Logging"]["heartbeat_url"])
-        await asyncio.sleep(60)
+        async with aiohttp.ClientSession() as session:
+            async with session.get(config["Logging"]["heartbeat_url"]):
+                await asyncio.sleep(60)
