@@ -129,8 +129,8 @@ class MyClient(commands.AutoShardedBot):
         #
         # Loads the cog at the beginning
         #           VVVVV
-
         exception_list = ["_CogLoader.py", "__init__.py", "__pycache__", "Unfinished cogs"]
+        errors = []
 
         async def load_cogs(folder, import_path="data.cogs"):
             for filename in os.listdir(folder):
@@ -151,8 +151,6 @@ class MyClient(commands.AutoShardedBot):
                         new_import_path = f"{import_path}.{filename}"
                         await load_cogs(filepath, import_path=new_import_path)
 
-        errors = []
-        loaded_cogs = []
         await load_cogs("./data/cogs/")
 
         if bool(errors):
