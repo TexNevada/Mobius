@@ -1,6 +1,5 @@
 discord.py>=2.3.2
-requests>=2.31.0
+aiohttp>=3.8.6
 mysql-connector-python>=8.1.0
-pyspellchecker>=0.7.1
 topggpy==1.4.0
 colorama>=0.4.6
