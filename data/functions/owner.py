@@ -12,7 +12,7 @@ def is_owner():
         config.read("./config.ini")
         for key, value in config.items("ADMIN"):
             if eval(config["Credentials"]["Active"]) is False:
-                logger.log("Authentication is disabled")
+                logger.info("Authentication is disabled")
             elif ctx.author.id == int(value):
                 logger.info(f"Authenticated for {ctx.author}")
                 return True
