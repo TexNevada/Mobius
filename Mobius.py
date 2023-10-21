@@ -129,7 +129,8 @@ class MyClient(commands.AutoShardedBot):
         #
         # Loads the cog at the beginning
         #           VVVVV
-        exception_list = ["_CogLoader.py", "__init__.py", "__pycache__", "Unfinished cogs"]
+        exception_list = ["_CogLoader.py", "__init__.py", "__pycache__", "Unfinished cogs", ".git", ".gitignore",
+                          "README.md", "LICENSE", "requirements.txt"]
         errors = []
 
         async def load_cogs(folder, import_path="data.cogs"):
@@ -281,16 +282,16 @@ async def on_ready():
     if Environment == "Dev":
         logger.info("  ~~You are running a development version!~~\n"
                     "  ~~It should not be used for production!~~")
-    guilds = client.guilds
-    total_members = []
-    for members in guilds:
-        for member in members.members._SequenceProxy__copied: # noqa
-            if member not in total_members:
-                total_members.append(member)
-    activeServers = client.guilds
-    sum = 0
-    for s in activeServers:
-        sum += len(s.members)
+    # guilds = client.guilds
+    # total_members = []
+    # for members in guilds:
+    #     for member in members.members._SequenceProxy__copied: # noqa
+    #         if member not in total_members:
+    #             total_members.append(member)
+    # activeServers = client.guilds
+    # sum = 0
+    # for s in activeServers:
+    #     sum += len(s.members)
         # total_members += len(members.members)
     # prints that the bot is ready with its username & id
     logger.info(f"  {Fore.LIGHTWHITE_EX}Mobius version: {Fore.GREEN}{mobius_version()}")
@@ -300,7 +301,7 @@ async def on_ready():
     logger.info(f"  {Fore.LIGHTWHITE_EX}Bot id:{Fore.GREEN} {client.user.id}")
     logger.info(f"  {Fore.LIGHTWHITE_EX}Loaded cogs: {Fore.GREEN}{len(loaded_cogs)}")
     logger.info(f"  {Fore.LIGHTWHITE_EX}Bot is currently serving:{Fore.GREEN} {len(client.guilds)} {Fore.LIGHTWHITE_EX}guilds.") # noqa
-    logger.info(f"  {Fore.LIGHTWHITE_EX}Bot is currently serving:{Fore.GREEN} {len(total_members)} {Fore.LIGHTWHITE_EX}members across all guilds.") # noqa
+    # logger.info(f"  {Fore.LIGHTWHITE_EX}Bot is currently serving:{Fore.GREEN} {len(total_members)} {Fore.LIGHTWHITE_EX}members across all guilds.") # noqa
     logger.info("")
     logger.info(f"{Fore.GREEN}#" * 110)
     logger.info(f"{Fore.GREEN}#" * 110)
