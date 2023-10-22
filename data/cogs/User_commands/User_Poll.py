@@ -17,6 +17,9 @@ from discord import app_commands
 import configparser
 from typing import Literal
 
+from data.functions.logging import get_log
+logger = get_log(__name__)
+
 #sys.path.append(".")
 #from ourPackages.myDB import MyDB
 
@@ -152,56 +155,10 @@ class poll_command(commands.Cog):
 
     @commands.command(aliases=["poll"])
     async def _poll(self, ctx, *args):
+        logger.info(f"A user requested a legacy command")
         config = configparser.ConfigParser()
         config.read("./config.ini")
         await ctx.send(config["LEGACY"]["UseSlash"])
-
-        # Checks for advanced options and adds into the start index
-        single_mode_vote_prefix = ["-single", "-s", "-sv"]
-        start_index = 0
-        picked_advanced_option = "| Multiple Vote "
-        if args[0].lower() in single_mode_vote_prefix or args[1].lower() in single_mode_vote_prefix:
-            start_index += 1
-            location = 0
-            if args[1].lower() in single_mode_vote_prefix:
-                location = 1
-            if args[location].lower() in single_mode_vote_prefix:
-                picked_advanced_option = "| Single Vote "
-
-        # In case of args 0 or 1 have a role mentioned as a lock option
-        if args[0].lower().startswith("-<@&") or args[1].lower().startswith("-<@&"):
-            start_index += 1
-            location = 0
-            if args[1].lower().startswith("-<@&"):
-                location = 1
-            role_id = args[location][4:-1]
-            picked_advanced_option += "| Locked - {role_id} ".format(role_id=role_id)
-
-        if not args:
-            await ctx.send("Missing arguments.")
-            return
-        elif len(args) < 3 + start_index:
-            await ctx.send("You need at least one question and two answers")
-            return
-        elif len(args) > 21 + start_index:
-            await ctx.send("That's to many options. You may only have up to 20 answers")
-            return
-
-        # Organize the answers into the string
-        options_str = ""
-        for i in range(len(args) - 1 - start_index):
-            options_str += emoji_names[i] + " - " + args[i + 1 + start_index]
-            options_str += "\n"
-
-        # make and send the embed
-        embed = discord.Embed(color=0xf5c542, title=args[0 + start_index])
-        embed.add_field(name="React to this message to vote", value=options_str)
-        embed.set_footer(text="MODUS - Poll " + picked_advanced_option)
-        message = await ctx.send(embed=embed)
-
-        # Add reactions to the message
-        for i in range(len(args) - 1 - start_index):
-            await message.add_reaction(emoji_list[i])
 
 
 async def setup(client: commands.Bot) -> None:
