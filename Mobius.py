@@ -141,7 +141,7 @@ class MyClient(commands.AutoShardedBot):
                         try:
                             await client.load_extension(full_import_path)
                             loaded_cogs.append(cog_name)
-                            logger.info(f"{Fore.LIGHTWHITE_EX}[{Fore.GREEN}OK{Fore.LIGHTWHITE_EX}] Loaded {cog_name}")
+                            logger.info(f"{Fore.LIGHTWHITE_EX}[{Fore.GREEN}OK{Fore.LIGHTWHITE_EX}] Loaded {cog_name}{Fore.RESET}")
                         except Exception as e:
                             errors.append(cog_name)
                             if Environment == "Dev":
@@ -155,7 +155,7 @@ class MyClient(commands.AutoShardedBot):
         if bool(errors):
             for cog in errors:
                 logger.info(
-                    f"{Fore.LIGHTWHITE_EX}[{Fore.RED}ERROR{Fore.LIGHTWHITE_EX}] Could not load the following `{cog}`")
+                    f"{Fore.LIGHTWHITE_EX}[{Fore.RED}ERROR{Fore.LIGHTWHITE_EX}] Could not load the following `{cog}`{Fore.RESET}")
 
         # Syncing
         #   VVV
@@ -263,19 +263,19 @@ Login procedure for the bot
 @client.event
 async def on_ready():
     logger.info("")
-    logger.info(f"{Fore.GREEN}#" * 110)
-    logger.info(f"{Fore.GREEN}#" * 110 + "\n")
+    logger.info(f"{Fore.GREEN}#" * 110 + Fore.RESET)
+    logger.info(f"{Fore.GREEN}#" * 110 + Fore.RESET + "\n")
 
     if os.path.isfile("./data/functions/ascii.py"):
         import data.functions.ascii as ascii # noqa
         ascii.run()
     else:
-        logger.info(f"{Fore.LIGHTGREEN_EX} ███╗   ███╗ ██████╗ ██████╗ ██╗██╗   ██╗███████╗     ██████╗ ██████╗ ██████╗ ███████╗") # noqa
-        logger.info(f"{Fore.LIGHTGREEN_EX} ████╗ ████║██╔═══██╗██╔══██╗██║██║   ██║██╔════╝    ██╔════╝██╔═══██╗██╔══██╗██╔════╝") # noqa
-        logger.info(f"{Fore.LIGHTGREEN_EX} ██╔████╔██║██║   ██║██████╔╝██║██║   ██║███████╗    ██║     ██║   ██║██████╔╝█████╗") # noqa
-        logger.info(f"{Fore.LIGHTGREEN_EX} ██║╚██╔╝██║██║   ██║██╔══██╗██║██║   ██║╚════██║    ██║     ██║   ██║██╔══██╗██╔══╝") # noqa
-        logger.info(f"{Fore.LIGHTGREEN_EX} ██║ ╚═╝ ██║╚██████╔╝██████╔╝██║╚██████╔╝███████║    ╚██████╗╚██████╔╝██║  ██║███████╗") # noqa
-        logger.info(f"{Fore.LIGHTGREEN_EX} ╚═╝     ╚═╝ ╚═════╝ ╚═════╝ ╚═╝ ╚═════╝ ╚══════╝     ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝") # noqa
+        logger.info(f"{Fore.LIGHTGREEN_EX} ███╗   ███╗ ██████╗ ██████╗ ██╗██╗   ██╗███████╗     ██████╗ ██████╗ ██████╗ ███████╗ {Fore.RESET}") # noqa
+        logger.info(f"{Fore.LIGHTGREEN_EX} ████╗ ████║██╔═══██╗██╔══██╗██║██║   ██║██╔════╝    ██╔════╝██╔═══██╗██╔══██╗██╔════╝ {Fore.RESET}") # noqa
+        logger.info(f"{Fore.LIGHTGREEN_EX} ██╔████╔██║██║   ██║██████╔╝██║██║   ██║███████╗    ██║     ██║   ██║██████╔╝█████╗ {Fore.RESET}") # noqa
+        logger.info(f"{Fore.LIGHTGREEN_EX} ██║╚██╔╝██║██║   ██║██╔══██╗██║██║   ██║╚════██║    ██║     ██║   ██║██╔══██╗██╔══╝ {Fore.RESET}") # noqa
+        logger.info(f"{Fore.LIGHTGREEN_EX} ██║ ╚═╝ ██║╚██████╔╝██████╔╝██║╚██████╔╝███████║    ╚██████╗╚██████╔╝██║  ██║███████╗ {Fore.RESET}") # noqa
+        logger.info(f"{Fore.LIGHTGREEN_EX} ╚═╝     ╚═╝ ╚═════╝ ╚═════╝ ╚═╝ ╚═════╝ ╚══════╝     ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝ {Fore.RESET}") # noqa
 
     if Environment == "Dev":
         logger.info("  ~~You are running a development version!~~\n"
@@ -292,21 +292,21 @@ async def on_ready():
     #     sum += len(s.members)
         # total_members += len(members.members)
     # prints that the bot is ready with its username & id
-    logger.info(f"  {Fore.LIGHTWHITE_EX}Mobius version: {Fore.GREEN}{mobius_version()}")
-    logger.info(f"  {Fore.LIGHTWHITE_EX}Discord.py version:{Fore.GREEN} {discord.__version__}")
+    logger.info(f"  {Fore.LIGHTWHITE_EX}Mobius version: {Fore.GREEN}{mobius_version()}{Fore.RESET}")
+    logger.info(f"  {Fore.LIGHTWHITE_EX}Discord.py version:{Fore.GREEN} {discord.__version__}{Fore.RESET}")
     logger.info(f"  {Fore.LIGHTWHITE_EX}------")
-    logger.info(f"  {Fore.LIGHTWHITE_EX}Bot's name:{Fore.GREEN} {client.user.name}")
-    logger.info(f"  {Fore.LIGHTWHITE_EX}Bot id:{Fore.GREEN} {client.user.id}")
-    logger.info(f"  {Fore.LIGHTWHITE_EX}Loaded cogs: {Fore.GREEN}{len(loaded_cogs)}")
-    logger.info(f"  {Fore.LIGHTWHITE_EX}Bot is currently serving:{Fore.GREEN} {len(client.guilds)} {Fore.LIGHTWHITE_EX}guilds.") # noqa
-    # logger.info(f"  {Fore.LIGHTWHITE_EX}Bot is currently serving:{Fore.GREEN} {len(total_members)} {Fore.LIGHTWHITE_EX}members across all guilds.") # noqa
+    logger.info(f"  {Fore.LIGHTWHITE_EX}Bot's name:{Fore.GREEN} {client.user.name}{Fore.RESET}")
+    logger.info(f"  {Fore.LIGHTWHITE_EX}Bot id:{Fore.GREEN} {client.user.id}{Fore.RESET}")
+    logger.info(f"  {Fore.LIGHTWHITE_EX}Loaded cogs: {Fore.GREEN}{len(loaded_cogs)}{Fore.RESET}")
+    logger.info(f"  {Fore.LIGHTWHITE_EX}Bot is currently serving:{Fore.GREEN} {len(client.guilds)} {Fore.LIGHTWHITE_EX}guilds.{Fore.RESET}") # noqa
+    # logger.info(f"  {Fore.LIGHTWHITE_EX}Bot is currently serving:{Fore.GREEN} {len(total_members)} {Fore.LIGHTWHITE_EX}members across all guilds.{Fore.RESET}") # noqa
     logger.info("")
-    logger.info(f"{Fore.GREEN}#" * 110)
-    logger.info(f"{Fore.GREEN}#" * 110)
+    logger.info(f"{Fore.GREEN}#" * 110 + Fore.RESET)
+    logger.info(f"{Fore.GREEN}#" * 110 + Fore.RESET)
     # await client.load_extension("data.cogs._CogLoader")
     await client.change_presence(status=discord.Status.online, activity=discord.Game(name=ready_msg))
     if config["Logging"]["Logs"] == "False":
-        logger.info(f"{Fore.LIGHTWHITE_EX}[{Fore.YELLOW}WARNING{Fore.LIGHTWHITE_EX}]: Logging is disabled! If this was a mistake. " # noqa
+        logger.info(f"{Fore.LIGHTWHITE_EX}[{Fore.YELLOW}WARNING{Fore.LIGHTWHITE_EX}]: Logging is disabled! If this was a mistake. {Fore.RESET}" # noqa
                     f"Please enable it in the config under LOGGING.")
     if config["Logging"]["heartbeat_url"] != "":
         client.loop.create_task(heartbeat())
