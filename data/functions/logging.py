@@ -12,11 +12,11 @@ def get_log(name: str):
     stream_formatter = logging.Formatter('%(message)s')
 
     if config["Logging"]["logs"].lower() == "true":
-        now = datetime.datetime.now()
-        time = now.strftime("%d.%m.%y")
+        # now = datetime.datetime.now()
+        # time = now.strftime("%d.%m.%y")
         log_file = config["Logging"]["Log_location"]
         bot_name = config["APP"]["Bot_Name"]
-        file_handler = logging.FileHandler(f"{log_file}/{bot_name}_runtime_{time}.log", encoding="utf-8", mode='w')
+        file_handler = logging.FileHandler(f"{log_file}/{bot_name}_runtime.log", encoding="utf-8", mode='w')
         file_handler.setLevel(int(config["Logging"]["file_log_Type"]))
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
