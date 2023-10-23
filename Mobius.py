@@ -51,8 +51,6 @@ boot_msg = APP["Boot_msg"]
 ready_msg = APP["Ready_msg"]
 bot_name = APP["Bot_Name"]
 
-log_location = config["Logging"]["Log"]
-log_name = log_location+bot_name+".log"
 loaded_cogs = []
 
 """
