@@ -8,7 +8,25 @@
 
 #### So what is Mobius exactly?
 
-- **Mobius** is a core framework recreation of **MODUS**.
-- It uses better code, better practices and open source!
+Mobius is a core framework recreation of my MODUS discord Bot.
+
+Mobius is an off the shelf discord bot & framework that is designed to be a bot that is easy to develop for & to use!
+
+- It's modular, meaning you can add your own commands & features with ease!
+- It's easily configurable.
+- 
  
-***My time is still very limited and development might be quite slow.***
+This framework should be: 
+- Ease of use. 
+- ease of development. 
+- ease of deployment. 
+- ease of maintenance.
+
+The plan:
+- [x] Refactor old MODUS code to be generic.
+- [ ] Move MODUS code to it's separate repository.
+- [ ] Create a proper logging system. _( Partially there )_
+- [ ] Create a proper configuration system. _( Partially there )_
+- [ ] Create example cog.
+- [ ] Add support for custom git modules.
+- [ ] Add the ability to reload cogs.
