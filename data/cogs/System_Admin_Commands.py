@@ -3,6 +3,8 @@ from discord.ext import commands
 import time
 from data.functions.owner import is_owner
 from data.functions.MySQL_Connector import MyDB
+from data.functions.logging import get_log
+logger = get_log(__name__)
 
 
 class owner(commands.Cog):
@@ -13,9 +15,9 @@ class owner(commands.Cog):
     @is_owner()
     async def listallmembers(self, ctx):
         try:
-            print(f"Listed members in all server in {ctx.guild.name}")
+            logger.info(f"Listed members in all server in {ctx.guild.name}")
         except:
-            print("Listed members in private message")
+            logger.info("Listed members in private message")
         activeServers = self.client.guilds
         sum = 0
         for s in activeServers:

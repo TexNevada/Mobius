@@ -7,7 +7,8 @@ from discord.ext.commands import has_permissions
 import sys
 sys.path.append(".")
 from data.functions.MySQL_Connector import MyDB
-
+from data.functions.logging import get_log
+logger = get_log(__name__)
 
 class FO76ServerStatus(commands.Cog):
     def __init__(self, client: commands.Bot) -> None:
@@ -16,7 +17,7 @@ class FO76ServerStatus(commands.Cog):
     @commands.command()
     @has_permissions(manage_channels=True)
     async def ToggleFO76Status(self, ctx, *, arg=None):
-        print(f"A admin toggled FO76ServerStatus in {ctx.guild.name}")
+        logger.info(f"A admin toggled FO76ServerStatus in {ctx.guild.name}")
 
         Forbidden_error = "I need the manage webhooks permission to do that"
         Exception_error = "Something went wrong here. Please contact support here: https://discord.gg/hMfgSaN"
@@ -52,8 +53,8 @@ class FO76ServerStatus(commands.Cog):
                     await ctx.send(Forbidden_error)
                 except Exception as e:
                     await ctx.send(Exception_error)
-                    # TODO: Add better exception print
-                    print(f"WARN Deletion: {e}")
+                    # TODO: Add better exception logger.info
+                    logger.info(f"WARNING Deletion: {e}")
 
             # Will Trigger if there is no db response
             else:
@@ -81,12 +82,12 @@ class FO76ServerStatus(commands.Cog):
                     await ctx.send(Forbidden_error)
                 except Exception as e:
                     await ctx.send(Exception_error)
-                    # TODO: Add better exception print
-                    print(f"WARN Creation: {e}")
+                    # TODO: Add better exception logger.info
+                    logger.info(f"WARNING Creation: {e}")
 
         except Exception as e:
-            # TODO: Add better exception print
-            print(f"WARN: {e}")
+            # TODO: Add better exception logger.info
+            logger.info(f"WARNING: {e}")
             await ctx.send(Super_bad_error)
 
 

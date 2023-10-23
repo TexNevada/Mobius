@@ -5,6 +5,8 @@ from typing import Literal
 from spellchecker import SpellChecker
 from data.functions.MySQL_Connector import MyDB
 import configparser
+from data.functions.logging import get_log
+logger = get_log(__name__)
 
 spell = SpellChecker()
 spell.word_frequency.load_text_file("./data/cogs_data/F76_Mutation_Word_List.txt")
@@ -22,7 +24,7 @@ class User_F76_Mutations(commands.Cog):
                                           "Egg Head", "Electrically Charged", "Empath", "Grounded", "Healing Factor",
                                           "Herbivore", "Herd Mentality", "Marsupial", "Plague Walker", "Scaly Skin",
                                           "Speed Demon", "Talons", "Twisted Muscles", "Unstable Isotope"]):
-        print(f"A user requested the mutation command")
+        logger.info(f"A user requested the mutation command")
         config = configparser.ConfigParser()
         config.read("./config.ini")
         c = MyDB("fallout")
@@ -59,9 +61,9 @@ class User_F76_Mutations(commands.Cog):
     @commands.command()
     async def mutation(self, ctx, *, arg: str):
         if ctx.guild:
-            print(f"A user requested the mutation command in \"{ctx.guild.name}\"")
+            logger.info(f"A user requested the mutation command in \"{ctx.guild.name}\"")
         else:
-            print(f"A user requested the mutation command in a private message")
+            logger.info(f"A user requested the mutation command in a private message")
         config = configparser.ConfigParser()
         config.read("./config.ini")
         await ctx.send(config["LEGACY"]["UseSlash"])
@@ -72,7 +74,7 @@ class User_F76_Mutations(commands.Cog):
             if not response:
                 if len(arg) < 15:
                     async with ctx.channel.typing():
-                        print(f"Checking spell checker with the following word: {arg}")
+                        logger.info(f"Checking spell checker with the following word: {arg}")
                         entryNR = 0
                         for entry in spell.candidates(arg):
                             entryNR = entryNR + 1
@@ -112,11 +114,11 @@ class User_F76_Mutations(commands.Cog):
                 # Will report to the player if what they typed doesn't exist within the database
                 except TypeError as e:
                     await ctx.send("Could not find anything by that name. Did you type it correctly?")
-                    print(e)
+                    logger.info(e)
                 # Will throw this error if something else went wrong
                 except Exception as e:
                     await ctx.send("Something went very wrong here. Contact support here https://discord.gg/hMfgSaN!")
-                    print(e)
+                    logger.info(e)
             else:
                 await ctx.send("Could not find anything by that name. Did you type it correctly?")
         c.close()
@@ -124,9 +126,9 @@ class User_F76_Mutations(commands.Cog):
     # @commands.command()
     # async def mutations(self, ctx):
     #     if ctx.guild:
-    #         print(f"A user requested the mutations command in \"{ctx.guild.name}\"")
+    #         logger.info(f"A user requested the mutations command in \"{ctx.guild.name}\"")
     #     else:
-    #         print(f"A user requested the mutations command in a private message")
+    #         logger.info(f"A user requested the mutations command in a private message")
     #     config = configparser.ConfigParser()
     #     config.read("./config.ini")
     #     c = MyDB("fallout")
@@ -145,7 +147,7 @@ class User_F76_Mutations(commands.Cog):
     #         except Exception as e:
     #             await ctx.send("Looks like there might be some connection issues with the database. "
     #                            "Please try again later")
-    #             print(e)
+    #             logger.info(e)
     #     c.close()
 
 

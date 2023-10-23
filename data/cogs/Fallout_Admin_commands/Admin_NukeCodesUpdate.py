@@ -7,6 +7,8 @@ from discord.ext.commands import has_permissions
 import sys
 sys.path.append(".")
 from data.functions.MySQL_Connector import MyDB
+from data.functions.logging import get_log
+logger = get_log(__name__)
 
 
 class nukeUpdatesCommand(commands.Cog):
@@ -17,7 +19,7 @@ class nukeUpdatesCommand(commands.Cog):
     @commands.guild_only()
     @has_permissions(manage_channels=True)
     async def ToggleCodeUpdate(self, ctx, *, arg=None):
-        print(f"A admin toggled code updates in {ctx.guild.name}")
+        logger.info(f"A admin toggled code updates in {ctx.guild.name}")
 
         Forbidden_error = "I need the manage webhooks permission to do that"
         Exception_error = "Something went wrong here. Please contact support here: https://discord.gg/hMfgSaN"
@@ -46,13 +48,13 @@ class nukeUpdatesCommand(commands.Cog):
 
                 except discord.errors.Forbidden as e:
                     await ctx.send(Forbidden_error)
-                    # We should print all errors :)
-                    print(f"WARN: Discord Forbidden: {e}")
+                    # We should logger.info all errors :)
+                    logger.info(f"WARNING: Discord Forbidden: {e}")
                 except Exception as e:
                     await ctx.send(Exception_error)
-                    # TODO: Add better exception print
+                    # TODO: Add better exception logger.info
                     # I will work on a logging module soon.
-                    print(f"WARN Deletion: {e}")
+                    logger.info(f"WARNING Deletion: {e}")
 
             # Will Trigger if there is no db response
             else:
@@ -82,12 +84,12 @@ class nukeUpdatesCommand(commands.Cog):
                     await ctx.send(Forbidden_error)
                 except Exception as e:
                     await ctx.send(Exception_error)
-                    # TODO: Add better exception print
-                    print(f"WARN Creation: {e}")
+                    # TODO: Add better exception logger.info
+                    logger.info(f"WARNING Creation: {e}")
 
         except Exception as e:
             # TODO: Add proper error return
-            print(f"WARN: {e}")
+            logger.info(f"WARNING: {e}")
             await ctx.send("Something really bad must have happened here. Can you report this to support immediately? "
                            "Ping at support in our discord server https://discord.gg/hMfgSaN. "
                            "Provide any details you can")

@@ -8,6 +8,8 @@ import sys
 sys.path.append(".")
 from data.functions.MySQL_Connector import MyDB
 
+from data.functions.logging import get_log
+logger = get_log(__name__)
 # TODO: Add proper error handling
 
 
@@ -18,7 +20,7 @@ class FO76NewsFeed(commands.Cog):
     @commands.command()
     @has_permissions(manage_channels=True)
     async def ToggleFo76News(self, ctx):
-        print(f"A admin toggled the  in {ctx.guild.name}")
+        logger.info(f"A admin toggled the  in {ctx.guild.name}")
 
         Forbidden_error = "I need the manage webhooks permission to do that"
         Exception_error = "Something went wrong here. Please contact support here: https://discord.gg/hMfgSaN"
@@ -51,7 +53,7 @@ class FO76NewsFeed(commands.Cog):
                 except Exception as e:
                     await ctx.send(Exception_error)
                     # TODO: Add proper error return
-                    print(f"WARN Deletion: {e}")
+                    logger.info(f"WARNING Deletion: {e}")
 
             # Will Trigger if there is no db response
             else:
@@ -72,11 +74,11 @@ class FO76NewsFeed(commands.Cog):
                 except Exception as e:
                     await ctx.send(Exception_error)
                     # TODO: Add proper error return
-                    print(f"WARN Creation: {e}")
+                    logger.info(f"WARNING Creation: {e}")
             c.close()
         except Exception as e:
             # TODO: Add proper error return
-            print(f"WARN: {e}")
+            logger.info(f"WARNING: {e}")
             await ctx.send("Something really bad must have happened here. Can you report this to support immediately? "
                            "Ping at support in our discord server https://discord.gg/hMfgSaN. "
                            "Provide any details you can")
