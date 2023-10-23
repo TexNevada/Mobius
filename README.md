@@ -24,6 +24,7 @@ This framework should be:
 
 The plan:
 - [x] Refactor old MODUS code to be generic.
+- [x] Allow for heartbeat monitoring.
 - [ ] Move MODUS code to it's separate repository.
 - [ ] Create a proper logging system. _( Partially there )_
 - [ ] Create a proper configuration system. _( Partially there )_
