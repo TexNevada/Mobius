@@ -1,6 +1,9 @@
 import logging
 import configparser
 import datetime
+import threading
+import queue
+from data.functions.MySQL_Connector import MyDB
 config = configparser.ConfigParser()
 config.read("./config.ini")
 
@@ -25,4 +28,38 @@ def get_log(name: str):
     stream_handler.setFormatter(stream_formatter)
     logger.setLevel(int(config["Logging"]["console_log_type"]))
     logger.addHandler(stream_handler)
+
+    if config["Databases"]["Log_to_MySQL"].lower() == "true":
+        mysql_handler = MySQLHandler()
+        logger.addHandler(mysql_handler)
+        threading.Thread(target=process_logs, args=(mysql_handler.log_queue,), daemon=True).start()
+
     return logger
+
+
+class MySQLHandler(logging.Handler):
+    def __init__(self, level=logging.NOTSET):
+        super().__init__(level)
+        self.log_queue = queue.Queue()
+
+    def emit(self, record):
+        self.log_queue.put(record)
+
+
+def process_logs(log_queue):
+    c = MyDB("Logging")
+    while True:
+        try:
+            record = log_queue.get(timeout=1)
+            level = record.levelname
+            msg = record.getMessage()
+            now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            cog_name = record.name
+            sql = "INSERT INTO General_Logging (datetime, severity, cog_name, message) VALUES (%s, %s, %s, %s)"
+            values = (now, level, cog_name, msg)
+            c.execute(sql, values)
+            c.commit()
+        except queue.Empty:
+            continue
+    c.close()
+
