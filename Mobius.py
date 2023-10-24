@@ -128,7 +128,7 @@ class MyClient(commands.AutoShardedBot):
         # Loads the cog at the beginning
         #           VVVVV
         exception_list = ["_CogLoader.py", "__init__.py", "__pycache__", "Unfinished cogs", ".git", ".gitignore",
-                          "README.md", "LICENSE", "requirements.txt"]
+                          "README.md", "LICENSE", "requirements.txt", "deprecated"]
         errors = []
 
         async def load_cogs(folder, import_path="data.cogs"):
