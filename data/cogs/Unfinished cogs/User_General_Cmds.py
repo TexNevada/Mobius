@@ -1,11 +1,13 @@
 import discord
-import discord.ext.commands
-from discord.ext import commands
-from discord import app_commands
 import datetime
 import configparser
+import discord.ext.commands
+from discord.ext import commands
+from data.functions.logging import get_log
+
 config = configparser.ConfigParser()
 config.read("./config.ini")
+logger = get_log(__name__)
 
 
 class User_General_Cmds(commands.Cog):
@@ -16,7 +18,7 @@ class User_General_Cmds(commands.Cog):
     # @app_commands.command(description="Allows")
     # @commands.guild_only()
     # async def _joined(self, ctx, *, member: discord.Member = None):
-    #     print(f"A user requested when it joined \"{ctx.guild.name}\" ")
+    #     logger.info(f"A user requested when it joined \"{ctx.guild.name}\" ")
     #     """Says when a member joined."""
     #     if not member:
     #         member = ctx.author
@@ -30,9 +32,9 @@ class User_General_Cmds(commands.Cog):
     # @commands.command()
     # async def credits(self, ctx):
     #     if ctx.guild:
-    #         print(f"A user requested the credits command in \"{ctx.guild.name}\" ")
+    #         logger.info(f"A user requested the credits command in \"{ctx.guild.name}\" ")
     #     else:
-    #         print("A user requested the credits command in a private message")
+    #         logger.info("A user requested the credits command in a private message")
     #     conf = configparser.ConfigParser()
     #     conf.read("./config.ini")
     #     await ctx.send(config["LEGACY"]["UseSlash"])
@@ -41,9 +43,9 @@ class User_General_Cmds(commands.Cog):
     @commands.command()
     async def support(self, ctx):
         if ctx.guild:
-            print(f"A user requested the support command in \"{ctx.guild.name}\"")
+            logger.info(f"A user requested the support command in \"{ctx.guild.name}\"")
         else:
-            print("A user requested the support command in a private message")
+            logger.info("A user requested the support command in a private message")
         conf = configparser.ConfigParser()
         conf.read("./config.ini")
         await ctx.send(conf["APP"]["Discord"])
@@ -51,26 +53,26 @@ class User_General_Cmds(commands.Cog):
     @commands.command()
     async def guilds(self, ctx):
         if ctx.guild:
-            print(f"A user requested the guilds command in \"{ctx.guild.name}\"")
+            logger.info(f"A user requested the guilds command in \"{ctx.guild.name}\"")
         else:
-            print(f"A user requested the guilds command in a private message")
+            logger.info(f"A user requested the guilds command in a private message")
         await ctx.send(f"{config['APP']['Bot_Name']} is in {str(len(self.client.guilds))} servers so far!")
 
     @commands.command()
     async def invite(self, ctx):
         if ctx.guild:
-            print(f"A user requested the invite command in \"{ctx.guild.name}\"")
+            logger.info(f"A user requested the invite command in \"{ctx.guild.name}\"")
         else:
-            print(f"A user requested the invite command in a private message")
+            logger.info(f"A user requested the invite command in a private message")
         await ctx.send("You can invite me to your server by pressing on my "
                        "profile picture and then \"Add to server\" button")
 
     @commands.command()
     async def ping(self, ctx):
         if ctx.guild:
-            print(f"A user requested \"ping\" in \"{ctx.guild.name}\" ")
+            logger.info(f"A user requested \"ping\" in \"{ctx.guild.name}\" ")
         else:
-            print(f"A user requested \"ping\" in a private message")
+            logger.info(f"A user requested \"ping\" in a private message")
 
         ping_ = self.client.latency
         ping = round(ping_ * 1000)
@@ -79,7 +81,7 @@ class User_General_Cmds(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def enlarge(self, ctx, *, member: discord.Member = None):
-        print(f"A user requested to enlarge a user profile image in \"{ctx.guild.name}\" ")
+        logger.info(f"A user requested to enlarge a user profile image in \"{ctx.guild.name}\" ")
         try:
             if not member:
                 member = ctx.author
@@ -102,7 +104,7 @@ class User_General_Cmds(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def joined(self, ctx, *, member: discord.Member = None):
-        print(f"A user requested when it joined \"{ctx.guild.name}\" ")
+        logger.info(f"A user requested when it joined \"{ctx.guild.name}\" ")
         """Says when a member joined."""
         await ctx.send(config["LEGACY"]["UseSlash"])
         if not member:
@@ -117,9 +119,9 @@ class User_General_Cmds(commands.Cog):
     # @commands.command()
     # async def credits(self, ctx):
     #     if ctx.guild:
-    #         print(f"A user requested the credits command in \"{ctx.guild.name}\" ")
+    #         logger.info(f"A user requested the credits command in \"{ctx.guild.name}\" ")
     #     else:
-    #         print("A user requested the credits command in a private message")
+    #         logger.info("A user requested the credits command in a private message")
     #     conf = configparser.ConfigParser()
     #     conf.read("./config.ini")
     #     await ctx.send(config["LEGACY"]["UseSlash"])
@@ -128,9 +130,9 @@ class User_General_Cmds(commands.Cog):
     @commands.command()
     async def support(self, ctx):
         if ctx.guild:
-            print(f"A user requested the support command in \"{ctx.guild.name}\"")
+            logger.info(f"A user requested the support command in \"{ctx.guild.name}\"")
         else:
-            print("A user requested the support command in a private message")
+            logger.info("A user requested the support command in a private message")
         conf = configparser.ConfigParser()
         conf.read("./config.ini")
         await ctx.send(conf["APP"]["Discord"])
@@ -138,26 +140,26 @@ class User_General_Cmds(commands.Cog):
     @commands.command()
     async def guilds(self, ctx):
         if ctx.guild:
-            print(f"A user requested the guilds command in \"{ctx.guild.name}\"")
+            logger.info(f"A user requested the guilds command in \"{ctx.guild.name}\"")
         else:
-            print(f"A user requested the guilds command in a private message")
+            logger.info(f"A user requested the guilds command in a private message")
         await ctx.send(f"{config['APP']['Bot_Name']} is in {str(len(self.client.guilds))} servers so far!")
 
     @commands.command()
     async def invite(self, ctx):
         if ctx.guild:
-            print(f"A user requested the invite command in \"{ctx.guild.name}\"")
+            logger.info(f"A user requested the invite command in \"{ctx.guild.name}\"")
         else:
-            print(f"A user requested the invite command in a private message")
+            logger.info(f"A user requested the invite command in a private message")
         await ctx.send("You can invite me to your server by pressing on my "
                        "profile picture and then \"Add to server\" button")
 
     @commands.command()
     async def ping(self, ctx):
         if ctx.guild:
-            print(f"A user requested \"ping\" in \"{ctx.guild.name}\" ")
+            logger.info(f"A user requested \"ping\" in \"{ctx.guild.name}\" ")
         else:
-            print(f"A user requested \"ping\" in a private message")
+            logger.info(f"A user requested \"ping\" in a private message")
 
         ping_ = self.client.latency
         ping = round(ping_ * 1000)
@@ -166,7 +168,7 @@ class User_General_Cmds(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def enlarge(self, ctx, *, member: discord.Member = None):
-        print(f"A user requested to enlarge a user profile image in \"{ctx.guild.name}\" ")
+        logger.info(f"A user requested to enlarge a user profile image in \"{ctx.guild.name}\" ")
         try:
             if not member:
                 member = ctx.author

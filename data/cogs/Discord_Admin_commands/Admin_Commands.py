@@ -1,11 +1,15 @@
 import discord
+import asyncio
+import configparser
 from discord.ext import commands
 from discord.ext.commands import has_permissions
-import asyncio
 from data.functions.MySQL_Connector import MyDB
-import configparser
+from data.functions.logging import get_log
+
 config = configparser.ConfigParser()
 config.read("./config.ini")
+logger = get_log(__name__)
+
 
 # TODO: Replace @MODUS with config
 # TODO: Replace Support link with config
@@ -27,7 +31,7 @@ class Admin_Commands(commands.Cog):
     async def clear(self, ctx, amount: int):
         try:
             if amount <= 10000:
-                print(f"A admin has started a purge of messages in \"{ctx.guild.name}\" clearing {amount} of messages")
+                logger.info(f"A admin has started a purge of messages in \"{ctx.guild.name}\" clearing {amount} of messages")
                 async with ctx.channel.typing():
                     if amount >= 1000:
                         await ctx.send("This might take a while to clear & start. Please be patient.")
@@ -36,11 +40,11 @@ class Admin_Commands(commands.Cog):
                     bot_message = await ctx.channel.send("Messages cleared!")
                     await asyncio.sleep(2)
                     await bot_message.delete()
-                print(f"Purged messages in \"{ctx.guild.name}\" ")
+                logger.info(f"Purged messages in \"{ctx.guild.name}\" ")
             else:
                 await ctx.send("You can only delete 100k messages at once.")
         except Exception as e:
-            print(e)
+            logger.info(e)
             await ctx.send('I require the permission `manage messages` to delete messages for you.')
 
     @commands.command(name="moveto", aliases=["mimic", "echo", "silentmoveto"])
@@ -109,7 +113,7 @@ class Admin_Commands(commands.Cog):
 
                             await message.delete()
 
-                        print(f"moved messages in \"{ctx.guild.name}\" ")
+                        logger.info(f"moved messages in \"{ctx.guild.name}\" ")
                         if ctx.invoked_with == "silentmoveto":
                             await webhook.delete()
                             bot_message = await ctx.send("Done")
@@ -135,7 +139,7 @@ class Admin_Commands(commands.Cog):
     @commands.guild_only()
     @has_permissions(administrator=True)
     async def prefix(self, ctx, arg=None):
-        print(f"A admin changed the prefix of their server in {ctx.guild.name}")
+        logger.info(f"A admin changed the prefix of their server in {ctx.guild.name}")
         try:
             c = MyDB("Essential")
             c.execute("SELECT * FROM GuildTable WHERE GuildID = %s", (ctx.guild.id,))
@@ -179,7 +183,7 @@ class Admin_Commands(commands.Cog):
             await ctx.send(embed=embed)
 
         except Exception as e:
-            print(e)
+            logger.info(e)
             await ctx.send(
                 "Something went wrong here. Contact support over at https://discord.gg/hMfgSaN")
 

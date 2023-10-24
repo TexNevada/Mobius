@@ -4,12 +4,13 @@ Made by: Yonatan
 
 # import discord library
 import discord
-# Imports commands
-from discord.ext import commands
-from discord import app_commands
-from data.functions.MySQL_Connector import MyDB
 import configparser
 from typing import Literal
+from discord import app_commands
+from discord.ext import commands
+from data.functions.MySQL_Connector import MyDB
+from data.functions.logging import get_log
+logger = get_log(__name__)
 
 tadpole_types = ["Athlete", "Archer", "Cook", "Codebreaker", "Herpetologist",
                  "Entomologist", "Mammalogist", "Hunter", "Swimmer", "Medic"]

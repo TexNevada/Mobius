@@ -1,16 +1,12 @@
-"""
-Extension name: Help commands
-Author: Tex Nevada
-"""
-
-# import discord library
 import discord
-# Imports commands
-from discord.ext import commands
 import configparser
+from discord.ext import commands
 from data.functions.MySQL_Connector import MyDB
+from data.functions.logging import get_log
 config = configparser.ConfigParser()
 config.read("./config.ini")
+logger = get_log(__name__)
+
 
 """
 ================
@@ -61,9 +57,9 @@ class User_Help_Commands(commands.Cog):
     async def help(self, ctx):
         if ctx.invoked_subcommand is None:
             if ctx.guild:
-                print(f"A user requested the command \"help\" in {ctx.guild.name}")
+                logger.info(f"A user requested the command \"help\" in {ctx.guild.name}")
             else:
-                print(f"A user requested the command \"help\" in a private message")
+                logger.info(f"A user requested the command \"help\" in a private message")
 
             # ==============================
             # Start of Admin Commands Embed

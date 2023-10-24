@@ -16,6 +16,9 @@ import sys
 sys.path.append(".")
 from data.functions.MySQL_Connector import MyDB
 from data.functions.utils import get_user_from_guild
+from data.functions.logging import get_log
+logger = get_log(__name__)
+
 
 async def role_check(sql_results, payload, guild, reaction_type):
     roles = []
@@ -48,48 +51,48 @@ async def role_check(sql_results, payload, guild, reaction_type):
 
 
 def reaction_error_response(error, arg=None, arg2=None, guild_id=None):
-    print("==============Reaction=Roles=ERROR==============")
-    print(f"Error applies to following server id: {guild_id}")
+    logger.info("==============Reaction=Roles=ERROR==============")
+    logger.info(f"Error applies to following server id: {guild_id}")
     response = False
     if error == "dms":
-        print("Category: dms")
-        print("I am unable to send messages to this user")
-        print("This could be caused due to the user blocking the bot")
-        print("or the user denies direct messages from the current server")
+        logger.info("Category: dms")
+        logger.info("I am unable to send messages to this user")
+        logger.info("This could be caused due to the user blocking the bot")
+        logger.info("or the user denies direct messages from the current server")
     elif error == "missing permissions":
-        print("Category: missing permissions")
-        print("I am unable to apply the current roles")
-        print(f"Roles: {arg}")
-        print(f"In server: {arg2}")
-        print("This is due to missing permissions")
+        logger.info("Category: missing permissions")
+        logger.info("I am unable to apply the current roles")
+        logger.info(f"Roles: {arg}")
+        logger.info(f"In server: {arg2}")
+        logger.info("This is due to missing permissions")
     elif error == "Reaction Server Issue":
         response = f"⚠ There seems to be a permission issue with reaction roles in {arg}. Please contact the local server admin. ⚠"
-        print(response)
+        logger.info(response)
     elif error == "No messageID":
         response = "No message ID was given. Find out how to get your message ID here: https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID/"
-        print(response)
+        logger.info(response)
     elif error == "No emoji":
         response = "No emoji was given. You need to add a emoji to your command."
-        print(response)
+        logger.info(response)
     elif error == "Wrong messageID":
         response = f"{arg} is not a valid message ID. Find out how to get your message ID here: https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID/"
-        print(response)
+        logger.info(response)
     elif error == "Role exists":
         response = f"Reaction role already exists for this emoji {arg}."
-        print(response)
+        logger.info(response)
     elif error == "No role":
         response = "No role was given. You need to specify a role."
-        print(response)
+        logger.info(response)
     elif error == "Role doesn't exist/above modus role":
         response = f"{arg} role does not exist in the current server or could be above the MODUS role."
-        print(response)
+        logger.info(response)
     elif error == "Cannot manage roles":
         response = "I am unable to manage that role. I am either lacking permissions to do so or the role you are trying to use is above my roles in the settings."
-        print(response)
+        logger.info(response)
     elif error == "No io":
         response = "You need to state if you want to \"add\" or \"remove\" a reaction role"
-        print(response)
-    print("======================END========================")
+        logger.info(response)
+    logger.info("======================END========================")
     if response is not False:
         return response
 
@@ -326,7 +329,7 @@ class reactionrole(commands.Cog):
                                     if match and match[0] != '':
                                         if '️⃣' not in emoji:
                                             # Emoji is an actual string and not an emoji
-                                            # print('Possible false positive emoji: {}'.format(emoji))
+                                            # logger.info('Possible false positive emoji: {}'.format(emoji))
                                             pass
                                         await message.add_reaction(emoji)
                                         await ctx.send(f"ReactionRole now set for {role} with emoji: {emoji}.")
@@ -337,7 +340,7 @@ class reactionrole(commands.Cog):
                                             await ctx.send(f"ReactionRole now set for {role} with emoji: {emoji}.")
                                             c.execute(sql, sql_values)
                                         except Exception as e:
-                                            print(e)
+                                            logger.info(e)
                                             # TODO: Its not the square emoji and it needs an error output. This needs testing
                                             await ctx.send("Well that\'s odd. Something you did didn't work. Contact support. You can use the `>support` command to get the link for the support server")
                                 else:

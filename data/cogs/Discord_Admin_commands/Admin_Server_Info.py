@@ -1,9 +1,10 @@
-# import discord py library
 import discord
-# Imports commands
-from discord.ext import commands
 import math
 import datetime
+from discord.ext import commands
+from data.functions.logging import get_log
+
+logger = get_log(__name__)
 
 
 def convert_size(size_bytes):
@@ -24,7 +25,7 @@ class Admin_Server_Info(commands.Cog):
     @commands.has_permissions(manage_channels=True)
     @commands.guild_only()
     async def serverinfo(self, ctx):
-        print(f"The serverinfo command was requested in {ctx.guild.name}")
+        logger.info(f"The serverinfo command was requested in {ctx.guild.name}")
         try:
             embed = discord.Embed(title=f"Server information for {ctx.guild.name}", color=discord.Color.red())
             embed.set_thumbnail(url=ctx.guild.icon.url)
@@ -116,7 +117,7 @@ class Admin_Server_Info(commands.Cog):
                                 inline=False)
             await ctx.send(embed=embed)
         except Exception as e:
-            print(e)
+            logger.info(e)
             await ctx.send("That's odd. I can't seem to give you that information. "
                            "You better report this in to support.")
 
@@ -130,7 +131,7 @@ class Admin_Server_Info(commands.Cog):
     # @commands.has_permissions(manage_channels=True)
     # @commands.guild_only()
     # async def modactions(self, ctx, member: discord.Member = None):
-    #     print(f"The modactions command was requested in {ctx.guild.name}")
+    #     logger.info(f"The modactions command was requested in {ctx.guild.name}")
     #     try:
     #         if member is None:
     #             member = ctx.author
