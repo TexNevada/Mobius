@@ -14,8 +14,9 @@ def check():
     try:
         import discord
         import aiohttp
+        import requests
         import mysql.connector
-        import spellchecker
+        import colorama
         import topgg
     except ImportError:
         installer()
