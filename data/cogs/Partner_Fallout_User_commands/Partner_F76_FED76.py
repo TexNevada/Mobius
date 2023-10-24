@@ -11,7 +11,6 @@ from data.functions.logging import get_log
 logger = get_log(__name__)
 
 
-
 class fed76(commands.Cog):
     def __init__(self, client: commands.Bot) -> None:
         self.client = client

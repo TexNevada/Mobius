@@ -8,6 +8,7 @@ from discord.ext import commands
 from data.functions.logging import get_log
 logger = get_log(__name__)
 
+
 class Partner_F76_Plan_Collectors(commands.Cog):
     def __init__(self, client: commands.Bot) -> None:
         self.client = client

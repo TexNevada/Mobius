@@ -10,6 +10,7 @@ from data.functions.MySQL_Connector import MyDB
 from data.functions.logging import get_log
 logger = get_log(__name__)
 
+
 class FO76ServerStatus(commands.Cog):
     def __init__(self, client: commands.Bot) -> None:
         self.client = client
