@@ -154,7 +154,7 @@ class MyClient(commands.AutoShardedBot):
 
         if bool(errors):
             for cog in errors:
-                logger.info(
+                logger.error(
                     f"{Fore.LIGHTWHITE_EX}[{Fore.RED}ERROR{Fore.LIGHTWHITE_EX}] Could not load the following `{cog}`{Fore.RESET}")
 
         # Syncing
