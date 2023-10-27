@@ -18,7 +18,7 @@ def install_requirements_in_directory(directory):
         for file in files:
             if file == 'requirements.txt':
                 requirements_path = os.path.join(root, file)
-                installer_path = os.path.join(root, 'installer.py')
+                installer_path = os.path.join(root, 'requirements.txt')
                 if os.path.exists(installer_path):
                     print(f"[INFO]: Installing requirements in {requirements_path}")
                     subprocess.check_call([sys.executable, installer_path])
