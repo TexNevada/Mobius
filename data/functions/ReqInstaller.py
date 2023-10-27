@@ -20,7 +20,7 @@ def install_requirements_in_directory(directory):
                 requirements_path = os.path.join(root, file)
                 if os.path.exists(requirements_path):
                     print(f"[INFO]: Installing requirements in {requirements_path}")
-                    subprocess.check_call([sys.executable, "-m", "pip", "install", requirements_path])
+                    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", requirements_path])
                 else:
                     print(f"[INFO]: Installer not found in {root}")
 
