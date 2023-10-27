@@ -26,13 +26,12 @@ def install_requirements_in_directory(directory):
 
 
 def check():
-    # try:
-    #     import discord
-    #     import aiohttp
-    #     import requests
-    #     import mysql.connector
-    #     import colorama
-    #     import topgg
-    # except ImportError:
-    #     installer()
-    installer()
+    try:
+        import discord
+        import aiohttp
+        import requests
+        import mysql.connector
+        import colorama
+        import topgg
+    except ImportError:
+        installer()
