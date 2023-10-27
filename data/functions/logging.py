@@ -55,7 +55,8 @@ def process_logs(log_queue):
             msg = record.getMessage()
             now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             cog_name = record.name
-            sql = "INSERT INTO General_Logging (datetime, severity, cog_name, message) VALUES (%s, %s, %s, %s)"
+            sql = (f"INSERT INTO {config['Databases']['Logging_Table']} (datetime, severity, cog_name, message) "
+                   f"VALUES (%s, %s, %s, %s)")
             values = (now, level, cog_name, msg)
             c.execute(sql, values)
             c.commit()
