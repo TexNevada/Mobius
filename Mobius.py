@@ -62,7 +62,6 @@ if eval(APP["sync_prompt"]) is True:
     should_sync = input("Do you want to sync commands? [y/n]: ")
 else:
     should_sync = "n"
-dev_guild = discord.Object(id=config["APP"]["DevGuild"])
 
 intents = discord.Intents.all()
 intents.members = eval(APP["Members"])
@@ -159,10 +158,15 @@ class MyClient(commands.AutoShardedBot):
 
         # Syncing
         #   VVV
-        self.tree.copy_global_to(guild=dev_guild)
-        if should_sync.lower() == "y":
-            client.tree.clear_commands(guild=dev_guild)
-            await self.tree.sync()
+        try:
+            dev_guild = discord.Object(id=config["APP"]["DevGuild"])
+            self.tree.copy_global_to(guild=dev_guild)
+            if should_sync.lower() == "y":
+                client.tree.clear_commands(guild=dev_guild)
+                await self.tree.sync()
+        except TypeError:
+            logger.warn(f"[{Fore.YELLOW}WARNING{Fore.RESET}] Guild ID is not set in config.ini. "
+                        f"Slash commands sync is disabled")
 
 
 def get_prefix(client, message):
