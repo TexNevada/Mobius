@@ -13,6 +13,12 @@ from datetime import datetime
 from data.functions.logging import get_log
 logger = get_log(__name__)
 
+config = configparser.ConfigParser()
+config.read("./config.ini")
+
+data = config["NukaCrypt"]["API_key"]
+header = config["NukaCrypt"]["Header"]
+
 
 class User_F76_NukeCodes(commands.Cog):
     def __init__(self, client: commands.Bot) -> None:
@@ -23,11 +29,7 @@ class User_F76_NukeCodes(commands.Cog):
     async def codes(self, interaction: discord.Interaction) -> None:
         """ /codes """
         logger.info("A user requested nuke codes")
-        config = configparser.ConfigParser()
-        config.read("./config.ini")
 
-        data = config["NukaCrypt"]["API_key"]
-        header = config["NukaCrypt"]["Header"]
         async with aiohttp.ClientSession() as session:
             url = 'https://nukacrypt.com/api/codes'
             json_data = json.loads(data)
@@ -52,7 +54,7 @@ class User_F76_NukeCodes(commands.Cog):
                         embed.add_field(name="⚠️WARNING⚠️", value=warning, inline=False)
                     elif response["ALPHA"] == "45836295":
                         warning = "The codes from last week might still be active. If you enter the code and it doesn't " \
-                                  "work like you lost your keycard, know it's due to a known bug with Bethesda's " \
+                                  "work and you lost your keycard, know it's due to a known bug with Bethesda's " \
                                   "nuke code Calendar. Please use last week's codes instead."
                         embed.add_field(name="⚠️WARNING⚠️", value=warning, inline=False)
 
@@ -101,3 +103,4 @@ class User_F76_NukeCodes(commands.Cog):
 # ends the extension
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(User_F76_NukeCodes(client))
+
