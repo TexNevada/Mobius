@@ -3,7 +3,7 @@ import subprocess
 
 
 def installer():
-    print("[INFO]: Downloading requirements")
+    print("[INFO]: Installing requirements")
     subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
     print("\n[INFO]: Rerun the program to continue"
           "\n[INFO]: Exiting...")
