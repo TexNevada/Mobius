@@ -165,8 +165,8 @@ class MyClient(commands.AutoShardedBot):
                 client.tree.clear_commands(guild=dev_guild)
                 await self.tree.sync()
         except TypeError:
-            logger.warn(f"[{Fore.YELLOW}WARNING{Fore.RESET}] Guild ID is not set in config.ini. "
-                        f"Slash commands sync is disabled")
+            logger.warning(f"[{Fore.YELLOW}WARNING{Fore.RESET}] Guild ID is not set in config.ini. "
+                           f"Slash commands sync is disabled")
 
 
 def get_prefix(client, message):
