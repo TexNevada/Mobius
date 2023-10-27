@@ -17,7 +17,7 @@ logger = get_log(__name__)
 pre = config["APP"]
 
 
-class Admin_Commands(commands.Cog):
+class admin_commands(commands.Cog):
     def __init__(self, client: commands.Bot) -> None:
         self.client = client
         super().__init__()
@@ -44,7 +44,7 @@ class Admin_Commands(commands.Cog):
             else:
                 await ctx.send("You can only delete 100k messages at once.")
         except Exception as e:
-            logger.info(e)
+            logger.info(f"{ctx.guild.id} - {e}")
             await ctx.send('I require the permission `manage messages` to delete messages for you.')
 
     @commands.command(name="moveto", aliases=["mimic", "echo", "silentmoveto"])
@@ -126,7 +126,7 @@ class Admin_Commands(commands.Cog):
                                     msg += '<@{}>, '.format(each)
                                 await webhook.send(username='MODUS',
                                                    content=f'{msg} Your messages were moved to this channel for reason: \"{reason}\"',
-                                                   avatar_url="https://cdn.edb.tools/MODUS_Project/images/Enclave/MODUS_smiling.jpg")
+                                                   avatar_url=config["APP"]["Bot_Logo"])
                             await webhook.delete()
                 else:
                     await ctx.send(f"You can only move a maximum {msg_limit} messages")
@@ -135,58 +135,6 @@ class Admin_Commands(commands.Cog):
         else:
             await ctx.send(missing_perms)
 
-    @commands.command()
-    @commands.guild_only()
-    @has_permissions(administrator=True)
-    async def prefix(self, ctx, arg=None):
-        logger.info(f"A admin changed the prefix of their server in {ctx.guild.name}")
-        try:
-            c = MyDB("Essential")
-            c.execute("SELECT * FROM GuildTable WHERE GuildID = %s", (ctx.guild.id,))
-            response = c.fetchone()
-            oldprefix = []
-            isprefixold = False
-            if response["Prefix"] and arg is not None:
-                oldprefix.append(response["Prefix"])
-                isprefixold = True
-
-            if arg is None:
-                c.execute("UPDATE GuildTable SET Prefix = %s WHERE GuildID = %s", (pre["prefix"], ctx.guild.id,))
-            else:
-                c.execute("UPDATE GuildTable SET Prefix = %s WHERE GuildID = %s", (arg, ctx.guild.id,))
-
-            c.commit()
-            c.close()
-
-            embed = discord.Embed(color=0xe7e9d3, title="The Enclave Database")
-
-            # embed.set_footer(text=embedlang["Footer"])
-            # embed.set_image(url="")
-            embed.set_thumbnail(url="https://cdn.edb.tools/MODUS_Project/images/Enclave/Enclave.png")
-            # embed.set_author(name="The Enclave Database", icon_url="")
-            prefix = "Your server prefix has changed!"
-            if arg is None:
-                embed.add_field(name=prefix,
-                                value="MODUS prefix has now been reverted back to default\n**Default:** >")
-
-            elif isprefixold is True:
-                embed.add_field(name=prefix,
-                                value=f"Your prefix is now changed\n"
-                                      f"**Old:** {oldprefix[0]}\n"
-                                      f"**New:** {arg}\n"
-                                      f"You can also use @MODUS for commands even if you forget your prefix")
-
-            elif isprefixold is False:
-                embed.add_field(name=prefix,
-                                value=f"Your prefix is now changed\n**New:** {arg}")
-
-            await ctx.send(embed=embed)
-
-        except Exception as e:
-            logger.info(e)
-            await ctx.send(
-                "Something went wrong here. Contact support over at https://discord.gg/hMfgSaN")
-
 
 async def setup(client: commands.Bot):
-    await client.add_cog(Admin_Commands(client))
+    await client.add_cog(admin_commands(client))
