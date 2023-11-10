@@ -17,7 +17,10 @@ config.read("./config.ini")
 
 async def heartbeat():
     while True:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(config["Logging"]["heartbeat_url"]) as response:
-                logger.debug(f"Heartbeat to origin returned: {response.status}")
-                await asyncio.sleep(60)
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(config["Logging"]["heartbeat_url"]) as response:
+                    logger.debug(f"Heartbeat to origin returned: {response.status}")
+        except Exception as e:
+            logger.error(f"Error in heartbeat: {e}")
+        await asyncio.sleep(60)
