@@ -49,7 +49,6 @@ token = APP["Token"]
 prefix = APP["Prefix"]
 boot_msg = APP["Boot_msg"]
 ready_msg = APP["Ready_msg"]
-bot_name = APP["Bot_Name"]
 
 loaded_cogs = []
 
