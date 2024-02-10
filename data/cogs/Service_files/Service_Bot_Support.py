@@ -1,10 +1,11 @@
 # import discord library
 import discord
+import configparser
 from discord.ext import commands
-# Import permissions & error checks
 from discord.ext.commands.cooldowns import BucketType
 from data.functions.owner import is_owner
-import configparser
+from data.functions.logging import get_log
+logger = get_log(__name__)
 
 
 class Service_Bot_Support(commands.Cog):
@@ -16,32 +17,22 @@ class Service_Bot_Support(commands.Cog):
     @commands.command()
     async def modsupport(self, ctx):
         config = configparser.ConfigParser()
-        config.read("./config.ini")
+        config.read("./config.ini", encoding="utf-8")
         for key, value in config.items("ADMIN"):
-            if eval(config["Credentials"]["Active"]) is True:
-                # TODO: Authentication could be logged.
-                pass
             if ctx.author.id == int(value):
                 break
             else:
                 embed = discord.Embed(color=discord.Color.blue(),
-                                      title="I have contacted support for you. ✅")
+                                      title=config["Support"]["Support_embed_title"])
 
-                embed.add_field(name="Be sure to be as descriptive as possible so it is easier for us to help you.\n"
-                                     "A few pointers to consider when asking for help.",
-                                value="```md\n"
-                                      "* Provide us with your guild name & guild id if possible.\n"
-                                      "* What is the cause of your issue? Be descriptive.\n"
-                                      "* Asking about the name of a command? Check the help command.\n"
-                                      "* Have you checked our documentation page?.\n"
-                                      "```",
+                embed.add_field(name=config["Support"]["Support_embed_field_name"],
+                                value=config["Support"]["Support_embed_field_value"],
                                 inline=False)
-                embed.set_footer(text="We are only human so if no one answers. Be patient. "
-                                      "We will get back to you with a ping.")
-                embed.set_thumbnail(url="https://cdn.edb.tools/MODUS_Project/images/PerkCardsAnimated/ExpertHacker.gif")
+                embed.set_footer(text=config["Support"]["Support_embed_footer"])
+                embed.set_thumbnail(url=config["Support"]["Support_embed_image_thumbnail"])
 
                 # Bot runs the embed
-                await ctx.send("<@&617655022636892160>", embed=embed)
+                await ctx.send(f'<@&{config["Support"]["Support_Role_ID"]}>', embed=embed)
                 break
 
     @modsupport.error
@@ -52,24 +43,34 @@ class Service_Bot_Support(commands.Cog):
     @is_owner()
     @commands.command()
     async def resolved(self, ctx):
-        command = self.client.get_command("modsupport")
-        await ctx.send(f"Support has been resolved <:HappyModus:697900498313019502>")
-        command.reset_cooldown(ctx)
+        logger.info("Resolved command issued for support function")
+        config = configparser.ConfigParser()
+        config.read("./config.ini")
+        if ctx.channel.id == int(config["Support"]["Support_Channel_ID"]):
+            command = self.client.get_command("modsupport")
+            await ctx.send(config["Support"]["Support_resolved_message"])
+            command.reset_cooldown(ctx)
+        else:
+            logger.info("Resolved command issues in the wrong channel.")
+            await ctx.send("This command only works in the same channel as the support channel you have configured!")
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        config = configparser.ConfigParser()
+        config.read("./config.ini")
         if message.content.startswith(">"):
             pass
         else:
             ctx = await self.client.get_context(message)
-            if ctx.channel.id == 588400643266445342:
-                command = self.client.get_command("modsupport")
-                try:
-                    await command.invoke(ctx)
-                except Exception as e:
-                    # print(e)
-                    # print(f"Support message ratelimit: {e}")
-                    pass
+            if config["Support"]["Support_Channel_ID"] != "" or config["Support"]["Support_Channel_ID"] is not None:
+                if ctx.channel.id == int(config["Support"]["Support_Channel_ID"]):
+                    command = self.client.get_command("modsupport")
+                    try:
+                        await command.invoke(ctx)
+                    except discord.ext.commands.errors.CommandOnCooldown:
+                        pass
+                    except Exception as e:
+                        logger.error(f"Support command failed. Reason: {e}")
 
 
 # ends the extension
