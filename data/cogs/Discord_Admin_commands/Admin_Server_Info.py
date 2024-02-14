@@ -72,10 +72,6 @@ class Admin_Server_Info(commands.Cog):
             embed.add_field(name="Server boost status",
                             value=f"Boost Tier: `{ctx.guild.premium_tier}`\n"
                                   f"Subscriber count: `{ctx.guild.premium_subscription_count}`", inline=True)
-
-            features = '\n'.join(item.capitalize() for item in ctx.guild.features)
-            embed.add_field(name="Server features", value=features, inline=True)
-
             # try:
             #     bans = 0
             #     for x in await ctx.guild.bans():
@@ -95,6 +91,9 @@ class Admin_Server_Info(commands.Cog):
                                 inline=True)
             except:
                 embed.add_field(name="Prune estimate", value="Missing kick perm", inline=True)
+
+            features = '\n'.join(item.capitalize() for item in ctx.guild.features)
+            embed.add_field(name="Server features", value=features, inline=False)
 
             year = ctx.guild.created_at.year
             month = ctx.guild.created_at.month
