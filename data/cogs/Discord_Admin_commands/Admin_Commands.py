@@ -47,12 +47,13 @@ class admin_commands(commands.Cog):
             logger.info(f"{ctx.guild.id} - {e}")
             await ctx.send('I require the permission `manage messages` to delete messages for you.')
 
-    @commands.command(name="moveto", aliases=["mimic", "echo", "silentmoveto"])
+    @commands.command(name="moveto", aliases=["silentmoveto"])
     # Will only execute command if user has the role
     @commands.guild_only()
     @has_permissions(manage_messages=True)
     # sees user wants to use the command clear.
     async def moveto(self, ctx, To_Channel: discord.TextChannel, amount: int, *, reason=None):
+        logger.info(f"Moveto command was issues in \"{ctx.guild.name}\"")
         msg_limit = 150
         missing_perms = "I require the permission `manage webhooks` & " \
                         "`manage messages` to be able to move messages for you"
@@ -69,65 +70,130 @@ class admin_commands(commands.Cog):
         if ctx.author.guild.me.guild_permissions.manage_webhooks:
             if ctx.author.guild.me.guild_permissions.manage_messages:
                 if amount <= msg_limit:
+                    # async with ctx.channel.typing():
+                    #     users = []
+                    #     messages = []
+                    #     image_formats = ["jpg", "png", "gif", "jpeg"]
+                    #     webhook = await To_Channel.create_webhook(name="Temporary Moveto Webhook")
+                    #     async for message in ctx.channel.history(limit=amount+1):
+                    #         # Look for messages or attachments
+                    #         if message.id != ctx.message.id and (message.content != '' or message.attachments[0].url):
+                    #             messages.append(message)
+                    #             if message.author.id not in users:
+                    #                 users.append(message.author.id)
+                    #
+                    #     messages.reverse()
+                    #     for message in messages:
+                    #         # In the case of a normal message without attachments
+                    #         if message.content != '' and not message.attachments:
+                    #             await webhook.send(username=message.author.name,
+                    #                                content=message.content,
+                    #                                avatar_url=message.author.display_avatar.url)
+                    #         # In case of attachments
+                    #         elif message.attachments:
+                    #             is_image = False
+                    #             for image_format in image_formats:
+                    #                 if message.attachments[0].url.endswith(image_format):
+                    #                     is_image = True
+                    #             # If attached file is not an image post only the content
+                    #             if not is_image:
+                    #                 if message.content == '':
+                    #                     pass
+                    #                 else:
+                    #                     await webhook.send(username=message.author.name,
+                    #                                        content=message.content,
+                    #                                        avatar_url=message.author.display_avatar.url)
+                    #             else:
+                    #                 await webhook.send(username=message.author.name,
+                    #                                    content=message.content + "\n" + message.attachments[0].url,
+                    #                                    avatar_url=message.author.display_avatar.url)
+                    #             # In case of an attachment wait 1 seconds to make sure it is loaded before deleting
+                    #             # Because discord will delete the unused url so if we delete the original before giving
+                    #             # the new msg a second to register it will sometimes not work and post a not working url
+                    #             await asyncio.sleep(1)
+                    #
+                    #         await message.delete()
+                    #
+                    #     logger.info(f"moved messages in \"{ctx.guild.name}\" ")
+                    #     if ctx.invoked_with == "silentmoveto":
+                    #         await webhook.delete()
+                    #         bot_message = await ctx.send("Done")
+                    #         await asyncio.sleep(2)
+                    #         await bot_message.delete()
+                    #     else:
+                    #         if len(users) > 0:
+                    #             msg =''
+                    #             for each in users:
+                    #                 msg += '<@{}>, '.format(each)
+                    #             await webhook.send(username='MODUS',
+                    #                                content=f'{msg} Your messages were moved to this channel for reason: \"{reason}\"',
+                    #                                avatar_url=config["APP"]["Bot_Logo"])
+                    #         await webhook.delete()
+
                     async with ctx.channel.typing():
-                        users = []
-                        messages = []
-                        image_formats = ["jpg", "png", "gif", "jpeg"]
-                        webhook = await To_Channel.create_webhook(name="Temporary Moveto Webhook")
-                        async for message in ctx.channel.history(limit=amount+1):
-                            # Look for messages or attachments
-                            if message.id != ctx.message.id and (message.content != '' or message.attachments[0].url):
-                                messages.append(message)
+                        webhook = await To_Channel.create_webhook(name="Temporary Moveto Webhook",
+                                                                  reason=f"For moving messages from {ctx.channel} to {To_Channel}")
+                        try:
+                            # Fetching messages
+                            # +1 is specified as we also want to include our own message.
+                            # We only want to delete the amount messages above our command message.
+                            messages = [message async for message in ctx.channel.history(limit=amount+1)]
+                            # We reverse the messages to post them back later in the destination channel.
+                            messages.reverse()
+
+                            # Fetching all users
+                            users = []
+                            for message in messages:
                                 if message.author.id not in users:
                                     users.append(message.author.id)
 
-                        messages.reverse()
-                        for message in messages:
-                            # In the case of a normal message without attachments
-                            if message.content != '' and not message.attachments:
-                                await webhook.send(username=message.author.name,
-                                                   content=message.content,
-                                                   avatar_url=message.author.display_avatar.url)
-                            # In case of attachments
-                            elif message.attachments:
-                                is_image = False
-                                for image_format in image_formats:
-                                    if message.attachments[0].url.endswith(image_format):
-                                        is_image = True
-                                # If attached file is not an image post only the content
-                                if not is_image:
-                                    if message.content == '':
-                                        pass
-                                    else:
-                                        await webhook.send(username=message.author.name,
-                                                           content=message.content,
+                            for message in messages:
+                                message_content = message.content
+                                if len(message.attachments) != 0:
+                                    message_content += '\n'.join([attachment.url for attachment in message.attachments])
+                                if message_content == "":
+                                    if len(message.embeds) == 0:
+                                        await webhook.send(username=f"{message.author.display_name}",
                                                            avatar_url=message.author.display_avatar.url)
+                                    else:
+                                        await webhook.send(username=f"{message.author.display_name}",
+                                                           avatar_url=message.author.display_avatar.url,
+                                                           embeds=message.embeds)
                                 else:
-                                    await webhook.send(username=message.author.name,
-                                                       content=message.content + "\n" + message.attachments[0].url,
-                                                       avatar_url=message.author.display_avatar.url)
+                                    if len(message.embeds) == 0:
+                                        await webhook.send(username=f"{message.author.display_name}",
+                                                           content=message_content,
+                                                           avatar_url=message.author.display_avatar.url)
+                                    else:
+                                        await webhook.send(username=f"{message.author.display_name}",
+                                                           content=message_content,
+                                                           avatar_url=message.author.display_avatar.url,
+                                                           embeds=message.embeds)
                                 # In case of an attachment wait 1 seconds to make sure it is loaded before deleting
                                 # Because discord will delete the unused url so if we delete the original before giving
                                 # the new msg a second to register it will sometimes not work and post a not working url
                                 await asyncio.sleep(1)
+                                await message.delete()
 
-                            await message.delete()
+                            logger.info(f"moved messages in \"{ctx.guild.name}\"")
+                            if ctx.invoked_with == "silentmoveto":
+                                bot_message = await ctx.send("Done")
+                                await asyncio.sleep(2)
+                                await bot_message.delete()
+                            else:
+                                if len(users) > 0:
+                                    msg = ''
+                                    for user_id in users:
+                                        msg += f'<@{user_id}>, '
+                                    await webhook.send(username='MODUS',
+                                                       content=f'{msg} Your messages were moved to this channel for reason:'
+                                                               f' \"{reason}\"',
+                                                       avatar_url=config["APP"]["Bot_Logo"])
+                            await webhook.delete(reason=f"Finished moving messages from {ctx.channel} to {To_Channel}")
+                        except Exception as e:
+                            logger.info(e)
+                            await webhook.delete(reason=f"Error when trying to move messages from {ctx.channel} to {To_Channel}")
 
-                        logger.info(f"moved messages in \"{ctx.guild.name}\" ")
-                        if ctx.invoked_with == "silentmoveto":
-                            await webhook.delete()
-                            bot_message = await ctx.send("Done")
-                            await asyncio.sleep(2)
-                            await bot_message.delete()
-                        else:
-                            if len(users) > 0:
-                                msg =''
-                                for each in users:
-                                    msg += '<@{}>, '.format(each)
-                                await webhook.send(username='MODUS',
-                                                   content=f'{msg} Your messages were moved to this channel for reason: \"{reason}\"',
-                                                   avatar_url=config["APP"]["Bot_Logo"])
-                            await webhook.delete()
                 else:
                     await ctx.send(f"You can only move a maximum {msg_limit} messages")
             else:
