@@ -75,53 +75,10 @@ class MyClient(commands.AutoShardedBot):
                          help_command=None,
                          case_insensitive=eval(APP["Case_insensitive"]))
 
-    # # @tasks.loop(count=1)
-    # async def tree_sync(self):
-    #     # await client.load_extension("data.cogs._CogLoader")
-    #     client.tree.copy_global_to(guild=dev_guild)
-    #     await self.tree.sync(guild=dev_guild)
-
-    # async def setup_hook(self) -> None:
-    #     #
-    #     # Loads the cog at the beginning
-    #     #           VVVVV
-    #
-    #     cogs = os.listdir("./data/cogs/")
-    #     # TODO: Remove last entry in list
-    #     exception_list = ["_CogLoader.py", "__init__.py", "__pycache__", "Unfinished cogs"]
-    #     for item in exception_list:
-    #         cogs.remove(item)
-    #     errors = []
-    #     passed = []
-    #     passed_chk = False
-    #     for cog in cogs:
-    #         cog = cog.split(".")
-    #         try:
-    #             await client.load_extension("data.cogs." + cog[0])
-    #             passed.append(cog[0])
-    #             loaded_cogs.append(cog[0])
-    #             passed_chk = True
-    #         except Exception as e:
-    #             errors.append(cog[0])
-    #             if config["APP"]["Debug"] == "DEBUG":
-    #                 logger.info(e)
-    #     if bool(errors):
-    #         for cog in errors:
-    #             logger.info(f"{Fore.LIGHTWHITE_EX}[{Fore.RED}ERROR{Fore.LIGHTWHITE_EX}] Could not load the following `{cog}`")
-    #     if passed_chk is True:
-    #         for cog in passed:
-    #             logger.info(f"{Fore.LIGHTWHITE_EX}[{Fore.GREEN}OK{Fore.LIGHTWHITE_EX}] Loaded {cog}")
-    #     # await self.client.tree.sync(guild=discord.Object(id=704725246187536489))
-    #
-    #     #
-    #     # Syncing
-    #     #   VVV
-    #     self.tree.copy_global_to(guild=dev_guild)
-    #     if should_sync.lower() == "y":
-    #         client.tree.clear_commands(guild=dev_guild)
-    #         await self.tree.sync()
-
     async def setup_hook(self) -> None:
+        if config["Logging"]["heartbeat_url"] != "":
+            client.loop.create_task(heartbeat())
+
         #
         # Loads the cog at the beginning
         #           VVVVV
@@ -283,18 +240,7 @@ async def on_ready():
     if Environment == "Dev":
         logger.info("  ~~You are running a development version!~~\n"
                     "  ~~It should not be used for production!~~")
-    # guilds = client.guilds
-    # total_members = []
-    # for members in guilds:
-    #     for member in members.members._SequenceProxy__copied: # noqa
-    #         if member not in total_members:
-    #             total_members.append(member)
-    # activeServers = client.guilds
-    # sum = 0
-    # for s in activeServers:
-    #     sum += len(s.members)
-        # total_members += len(members.members)
-    # prints that the bot is ready with its username & id
+
     logger.info(f"  {Fore.LIGHTWHITE_EX}Mobius version: {Fore.GREEN}{mobius_version()}{Fore.RESET}")
     logger.info(f"  {Fore.LIGHTWHITE_EX}Discord.py version:{Fore.GREEN} {discord.__version__}{Fore.RESET}")
     logger.info(f"  {Fore.LIGHTWHITE_EX}------")
@@ -311,8 +257,6 @@ async def on_ready():
     if config["Logging"]["Logs"] == "False":
         logger.info(f"{Fore.LIGHTWHITE_EX}[{Fore.YELLOW}WARNING{Fore.LIGHTWHITE_EX}]: Logging is disabled! If this was a mistake. {Fore.RESET}" # noqa
                     f"Please enable it in the config under LOGGING.")
-    if config["Logging"]["heartbeat_url"] != "":
-        client.loop.create_task(heartbeat())
 
 
 # starts a client.event
