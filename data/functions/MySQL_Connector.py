@@ -14,7 +14,8 @@ class MyDB:
                 self._db_connection = mysql.connector.connect(host=db['IP'],
                                                               user=db['Username'],
                                                               passwd=db['Password'],
-                                                              database=config["Databases"][database])
+                                                              database=config["Databases"][database],
+                                                              port=db['Port'])
                 self._db_cur = self._db_connection.cursor(dictionary=True, buffered=True)
             else:
                 raise Exception("Database credentials is not activated. Set the value to True to avoid this error")
